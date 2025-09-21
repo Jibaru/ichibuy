@@ -1,0 +1,500 @@
+basePath: /api/v1
+definitions:
+  domain.Location:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
+  handlers.CreateCustomerBody:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+    required:
+    - first_name
+    - last_name
+    type: object
+  handlers.CreateStoreBody:
+    properties:
+      description:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        type: string
+    required:
+    - lat
+    - lng
+    - name
+    type: object
+  handlers.ErrorResp:
+    properties:
+      error:
+        type: string
+    type: object
+  handlers.UpdateCustomerBody:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+    required:
+    - first_name
+    - last_name
+    type: object
+  handlers.UpdateStoreBody:
+    properties:
+      description:
+        type: string
+      location:
+        $ref: '#/definitions/domain.Location'
+      name:
+        type: string
+    required:
+    - location
+    - name
+    type: object
+  services.CreateCustomerResp:
+    properties:
+      id:
+        type: string
+    type: object
+  services.CreateStoreResp:
+    properties:
+      id:
+        type: string
+    type: object
+  services.GetCustomerResp:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  services.GetStoreResp:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        type: string
+      slug:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  services.ListStoresResp:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      stores:
+        items:
+          $ref: '#/definitions/services.StoreListItem'
+        type: array
+      total:
+        type: integer
+    type: object
+  services.StoreListItem:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        type: string
+      slug:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: https://ichibuy-store.vercel.app
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the ichibuy/store API.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: ichibuy/store API
+  version: "1.0"
+paths:
+  /api/v1/customers:
+    post:
+      consumes:
+      - application/json
+      description: Create a new customer with first name, last name, email and phone
+      parameters:
+      - description: Customer data
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateCustomerBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.CreateCustomerResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Create a new customer
+      tags:
+      - customers
+  /api/v1/customers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a customer
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Delete customer by ID
+      tags:
+      - customers
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a customer by its ID
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/services.GetCustomerResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Get customer by ID
+      tags:
+      - customers
+    put:
+      consumes:
+      - application/json
+      description: Update a customer's information
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Customer data
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateCustomerBody'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Update customer by ID
+      tags:
+      - customers
+  /api/v1/graphql:
+    post:
+      consumes:
+      - application/json
+      description: GraphQL endpoint to query stores with filters, sorting and pagination
+      parameters:
+      - description: GraphQL query
+        in: body
+        name: query
+        required: true
+        schema:
+          properties:
+            query:
+              type: string
+            variables:
+              type: object
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: GraphQL endpoint for stores
+      tags:
+      - graphql
+  /api/v1/stores:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of stores with filters and sorting
+      parameters:
+      - description: Filter by name
+        in: query
+        name: name
+        type: string
+      - description: Filter by description
+        in: query
+        name: description
+        type: string
+      - default: '"name"'
+        description: Sort by field
+        in: query
+        name: sort_by
+        type: string
+      - default: '"ASC"'
+        description: Sort order
+        in: query
+        name: sort_order
+        type: string
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/services.ListStoresResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: List stores
+      tags:
+      - stores
+    post:
+      consumes:
+      - application/json
+      description: Create a new store with name, description and location
+      parameters:
+      - description: Store data
+        in: body
+        name: store
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateStoreBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.CreateStoreResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Create a new store
+      tags:
+      - stores
+  /api/v1/stores/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a store
+      parameters:
+      - description: Store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Delete store by ID
+      tags:
+      - stores
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a store by its ID
+      parameters:
+      - description: Store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/services.GetStoreResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Get store by ID
+      tags:
+      - stores
+    put:
+      consumes:
+      - application/json
+      description: Update a store's information
+      parameters:
+      - description: Store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Store data
+        in: body
+        name: store
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateStoreBody'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Update store by ID
+      tags:
+      - stores
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
