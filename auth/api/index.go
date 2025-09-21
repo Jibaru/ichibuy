@@ -5,6 +5,7 @@ import (
 
 	"ichibuy/auth/config"
 	"ichibuy/auth/db"
+	_ "ichibuy/auth/docs"
 	"ichibuy/auth/server"
 )
 

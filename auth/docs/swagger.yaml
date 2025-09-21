@@ -5,6 +5,28 @@ definitions:
       error:
         type: string
     type: object
+  handlers.JWK:
+    properties:
+      alg:
+        type: string
+      e:
+        type: string
+      kid:
+        type: string
+      kty:
+        type: string
+      "n":
+        type: string
+      use:
+        type: string
+    type: object
+  handlers.JWKS:
+    properties:
+      keys:
+        items:
+          $ref: '#/definitions/handlers.JWK'
+        type: array
+    type: object
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
@@ -26,14 +48,16 @@ paths:
     get:
       consumes:
       - application/json
-      description: GetJWKS
+      description: Returns JSON Web Key Set for JWT verification
       produces:
       - application/json
       responses:
         "200":
           description: OK
-        "400":
-          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.JWKS'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.ErrorResp'
       summary: GetJWKS
@@ -67,7 +91,4 @@ paths:
           schema:
             $ref: '#/definitions/handlers.ErrorResp'
       summary: OAuthCallback
-securityDefinitions:
-  BasicAuth:
-    type: basic
 swagger: "2.0"
