@@ -782,7 +782,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "https://ichibuy-store.vercel.app",
+	Host:             "ichibuy-store.vercel.app",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "ichibuy/store API",

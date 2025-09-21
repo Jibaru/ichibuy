@@ -29,7 +29,7 @@ definitions:
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
-host: https://ichibuy-auth.vercel.app
+host: ichibuy-auth.vercel.app
 info:
   contact:
     email: support@swagger.io
