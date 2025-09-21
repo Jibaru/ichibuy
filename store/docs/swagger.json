@@ -16,7 +16,6 @@
         "version": "1.0"
     },
     "host": "https://ichibuy-store.vercel.app",
-    "basePath": "/api/v1",
     "paths": {
         "/api/v1/customers": {
             "post": {

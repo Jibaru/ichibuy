@@ -783,7 +783,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "https://ichibuy-store.vercel.app",
-	BasePath:         "/api/v1",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "ichibuy/store API",
 	Description:      "This is the ichibuy/store API.",
