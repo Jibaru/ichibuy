@@ -1,0 +1,166 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "File Storage API",
+    "description": "A REST API for uploading and managing files using UploadThing",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "/api/v1",
+  "schemes": ["http", "https"],
+  "consumes": ["multipart/form-data", "application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/files/upload": {
+      "post": {
+        "summary": "Upload multiple files",
+        "description": "Upload one or more files to UploadThing storage with a specified domain",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "name": "files",
+            "in": "formData",
+            "description": "Files to upload",
+            "required": true,
+            "type": "file",
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "domain",
+            "in": "formData",
+            "description": "Domain for all uploaded files",
+            "required": true,
+            "type": "string",
+            "example": "example.com"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Files uploaded successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UploadedFile"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing files or domain",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "tags": ["Files"]
+      }
+    },
+    "/files/delete": {
+      "delete": {
+        "summary": "Delete multiple files",
+        "description": "Delete multiple files by their IDs from UploadThing storage",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "File IDs to delete",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeleteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Files deleted successfully"
+          },
+          "400": {
+            "description": "Bad request - missing or invalid file IDs",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "tags": ["Files"]
+      }
+    }
+  },
+  "definitions": {
+    "UploadedFile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique file identifier",
+          "example": "abc123def456"
+        },
+        "name": {
+          "type": "string",
+          "description": "Original filename",
+          "example": "document.pdf"
+        },
+        "url": {
+          "type": "string",
+          "description": "Public URL to access the file",
+          "example": "https://uploadthing.com/f/abc123def456"
+        }
+      },
+      "required": ["id", "name", "url"]
+    },
+    "DeleteRequest": {
+      "type": "object",
+      "properties": {
+        "fileIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of file IDs to delete",
+          "example": ["abc123def456", "xyz789ghi012"]
+        }
+      },
+      "required": ["fileIds"]
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message",
+          "example": "Files array is required and cannot be empty"
+        }
+      },
+      "required": ["error"]
+    }
+  },
+  "tags": [
+    {
+      "name": "Files",
+      "description": "File upload and management operations"
+    },
+    {
+      "name": "Health",
+      "description": "API health check"
+    }
+  ]
+}
