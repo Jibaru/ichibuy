@@ -22,7 +22,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-app.use('/api/v1/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/v1/swagger', swaggerUi.serve as any, swaggerUi.setup(swaggerDocument) as any);
 app.use('/api/v1/files', filesRouter);
 
 export default app;
