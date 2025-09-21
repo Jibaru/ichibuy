@@ -13,6 +13,7 @@ import (
 // @Description  OAuthCallback
 // @Accept       json
 // @Produce      json
+// @Param        provider path string true "Provider: google"
 // @Success      307
 // @Failure      400    {object}    ErrorResp
 // @Router       /api/v1/auth/{provider}/callback [get]
