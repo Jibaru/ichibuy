@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
+import * as helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -17,7 +17,7 @@ const swaggerDocument = JSON.parse(
 
 const app = express();
 
-app.use(helmet());
+app.use(helmet.default());
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
