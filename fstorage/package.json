@@ -3,12 +3,8 @@
   "version": "1.0.0",
   "description": "File storage API with Express.js and UploadThing",
   "type": "module",
-  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
-    "type-check": "tsc --noEmit"
+    "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
     "@types/express": "^5.0.0",
