@@ -60,6 +60,15 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "StartOAuth",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Provider: google",
+                        "name": "provider",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "307": {
                         "description": "Temporary Redirect"
@@ -83,6 +92,15 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "OAuthCallback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Provider: google",
+                        "name": "provider",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "307": {
                         "description": "Temporary Redirect"

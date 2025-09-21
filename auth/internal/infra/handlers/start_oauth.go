@@ -13,6 +13,7 @@ import (
 // @Description  StartOAuth
 // @Accept       json
 // @Produce      json
+// @Param        provider path string true "Provider: google"
 // @Success      307
 // @Failure      500    {object}    ErrorResp
 // @Router       /api/v1/auth/{provider} [get]

@@ -65,6 +65,12 @@ paths:
       consumes:
       - application/json
       description: StartOAuth
+      parameters:
+      - description: 'Provider: google'
+        in: path
+        name: provider
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -80,6 +86,12 @@ paths:
       consumes:
       - application/json
       description: OAuthCallback
+      parameters:
+      - description: 'Provider: google'
+        in: path
+        name: provider
+        required: true
+        type: string
       produces:
       - application/json
       responses:
