@@ -17,12 +17,12 @@ import "./swagger"
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost:3000/api/v1*
+All URIs are relative to *http://localhost:3000*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*FilesApi* | [**FilesDeleteDelete**](docs/FilesApi.md#filesdeletedelete) | **Delete** /files/delete | Delete multiple files
-*FilesApi* | [**FilesUploadPost**](docs/FilesApi.md#filesuploadpost) | **Post** /files/upload | Upload multiple files
+*FilesApi* | [**ApiV1FilesBatchDelete**](docs/FilesApi.md#apiv1filesbatchdelete) | **Delete** /api/v1/files/batch | Delete multiple files
+*FilesApi* | [**ApiV1FilesUploadPost**](docs/FilesApi.md#apiv1filesuploadpost) | **Post** /api/v1/files/upload | Upload multiple files
 
 
 ## Documentation For Models

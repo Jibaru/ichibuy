@@ -1,15 +1,15 @@
 # \FilesApi
 
-All URIs are relative to *http://localhost:3000/api/v1*
+All URIs are relative to *http://localhost:3000*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**FilesDeleteDelete**](FilesApi.md#FilesDeleteDelete) | **Delete** /files/delete | Delete multiple files
-[**FilesUploadPost**](FilesApi.md#FilesUploadPost) | **Post** /files/upload | Upload multiple files
+[**ApiV1FilesBatchDelete**](FilesApi.md#ApiV1FilesBatchDelete) | **Delete** /api/v1/files/batch | Delete multiple files
+[**ApiV1FilesUploadPost**](FilesApi.md#ApiV1FilesUploadPost) | **Post** /api/v1/files/upload | Upload multiple files
 
 
-# **FilesDeleteDelete**
-> FilesDeleteDelete(ctx, body)
+# **ApiV1FilesBatchDelete**
+> ApiV1FilesBatchDelete(ctx, body)
 Delete multiple files
 
 Delete multiple files by their IDs from UploadThing storage
@@ -36,8 +36,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **FilesUploadPost**
-> InlineResponse200 FilesUploadPost(ctx, files, domain)
+# **ApiV1FilesUploadPost**
+> InlineResponse200 ApiV1FilesUploadPost(ctx, files, domain)
 Upload multiple files
 
 Upload one or more files to UploadThing storage with a specified domain
@@ -47,7 +47,7 @@ Upload one or more files to UploadThing storage with a specified domain
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **files** | ***os.File**| Files to upload | 
+  **files** | [**[]*os.File**](*os.File.md)| Files to upload | 
   **domain** | **string**| Domain for all uploaded files | 
 
 ### Return type

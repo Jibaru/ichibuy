@@ -7,7 +7,6 @@ info:
   contact:
     name: "API Support"
 host: "localhost:3000"
-basePath: "/api/v1"
 tags:
 - name: "Files"
   description: "File upload and management operations"
@@ -22,7 +21,7 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /files/upload:
+  /api/v1/files/upload:
     post:
       tags:
       - "Files"
@@ -36,8 +35,9 @@ paths:
         in: "formData"
         description: "Files to upload"
         required: true
-        type: "file"
-        collectionFormat: "multi"
+        type: "array"
+        items:
+          type: "file"
         x-exportParamName: "Files"
       - name: "domain"
         in: "formData"
@@ -58,7 +58,7 @@ paths:
           description: "Internal server error"
           schema:
             $ref: "#/definitions/Error"
-  /files/delete:
+  /api/v1/files/batch:
     delete:
       tags:
       - "Files"
