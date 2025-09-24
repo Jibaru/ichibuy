@@ -1,0 +1,588 @@
+---
+swagger: "2.0"
+info:
+  description: "This is the ichibuy/store API."
+  version: "1.0"
+  title: "ichibuy/store API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    name: "API Support"
+    url: "http://www.swagger.io/support"
+    email: "support@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "ichibuy-store.vercel.app"
+paths:
+  /api/v1/customers:
+    post:
+      tags:
+      - "customers"
+      summary: "Create a new customer"
+      description: "Create a new customer with first name, last name, email and phone"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "customer"
+        description: "Customer data"
+        required: true
+        schema:
+          $ref: "#/definitions/handlers.CreateCustomerBody"
+        x-exportParamName: "Customer"
+      security:
+      - BearerAuth: []
+      responses:
+        "201":
+          description: "Created"
+          schema:
+            $ref: "#/definitions/services.CreateCustomerResp"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+  /api/v1/customers/{id}:
+    get:
+      tags:
+      - "customers"
+      summary: "Get customer by ID"
+      description: "Retrieve a customer by its ID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Customer ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/services.GetCustomerResp"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "404":
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+    put:
+      tags:
+      - "customers"
+      summary: "Update customer by ID"
+      description: "Update a customer's information"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Customer ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      - in: "body"
+        name: "customer"
+        description: "Customer data"
+        required: true
+        schema:
+          $ref: "#/definitions/handlers.UpdateCustomerBody"
+        x-exportParamName: "Customer"
+      security:
+      - BearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+    delete:
+      tags:
+      - "customers"
+      summary: "Delete customer by ID"
+      description: "Delete a customer"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Customer ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      security:
+      - BearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+  /api/v1/graphql:
+    post:
+      tags:
+      - "graphql"
+      summary: "GraphQL endpoint for stores"
+      description: "GraphQL endpoint to query stores with filters, sorting and pagination"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "query"
+        description: "GraphQL query"
+        required: true
+        schema:
+          $ref: "#/definitions/query"
+        x-exportParamName: "Query"
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "object"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+  /api/v1/stores:
+    get:
+      tags:
+      - "stores"
+      summary: "List stores"
+      description: "Get paginated list of stores with filters and sorting"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "query"
+        description: "Filter by name"
+        required: false
+        type: "string"
+        x-exportParamName: "Name"
+        x-optionalDataType: "String"
+      - name: "description"
+        in: "query"
+        description: "Filter by description"
+        required: false
+        type: "string"
+        x-exportParamName: "Description"
+        x-optionalDataType: "String"
+      - name: "sort_by"
+        in: "query"
+        description: "Sort by field"
+        required: false
+        type: "string"
+        default: "\"name\""
+        x-exportParamName: "SortBy"
+        x-optionalDataType: "String"
+      - name: "sort_order"
+        in: "query"
+        description: "Sort order"
+        required: false
+        type: "string"
+        default: "\"ASC\""
+        x-exportParamName: "SortOrder"
+        x-optionalDataType: "String"
+      - name: "offset"
+        in: "query"
+        description: "Offset"
+        required: false
+        type: "integer"
+        default: 0
+        x-exportParamName: "Offset"
+        x-optionalDataType: "Int32"
+      - name: "limit"
+        in: "query"
+        description: "Limit"
+        required: false
+        type: "integer"
+        default: 10
+        x-exportParamName: "Limit"
+        x-optionalDataType: "Int32"
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/services.ListStoresResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+    post:
+      tags:
+      - "stores"
+      summary: "Create a new store"
+      description: "Create a new store with name, description and location"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "store"
+        description: "Store data"
+        required: true
+        schema:
+          $ref: "#/definitions/handlers.CreateStoreBody"
+        x-exportParamName: "Store"
+      security:
+      - BearerAuth: []
+      responses:
+        "201":
+          description: "Created"
+          schema:
+            $ref: "#/definitions/services.CreateStoreResp"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+  /api/v1/stores/{id}:
+    get:
+      tags:
+      - "stores"
+      summary: "Get store by ID"
+      description: "Retrieve a store by its ID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Store ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/services.GetStoreResp"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "404":
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+    put:
+      tags:
+      - "stores"
+      summary: "Update store by ID"
+      description: "Update a store's information"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Store ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      - in: "body"
+        name: "store"
+        description: "Store data"
+        required: true
+        schema:
+          $ref: "#/definitions/handlers.UpdateStoreBody"
+        x-exportParamName: "Store"
+      security:
+      - BearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+    delete:
+      tags:
+      - "stores"
+      summary: "Delete store by ID"
+      description: "Delete a store"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Store ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      security:
+      - BearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+securityDefinitions:
+  BearerAuth:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+definitions:
+  domain.Location:
+    type: "object"
+    properties:
+      lat:
+        type: "number"
+      lng:
+        type: "number"
+  handlers.CreateCustomerBody:
+    type: "object"
+    required:
+    - "first_name"
+    - "last_name"
+    properties:
+      email:
+        type: "string"
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      phone:
+        type: "string"
+  handlers.CreateStoreBody:
+    type: "object"
+    required:
+    - "lat"
+    - "lng"
+    - "name"
+    properties:
+      description:
+        type: "string"
+      lat:
+        type: "number"
+      lng:
+        type: "number"
+      name:
+        type: "string"
+  handlers.ErrorResp:
+    type: "object"
+    properties:
+      error:
+        type: "string"
+  handlers.UpdateCustomerBody:
+    type: "object"
+    required:
+    - "first_name"
+    - "last_name"
+    properties:
+      email:
+        type: "string"
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      phone:
+        type: "string"
+  handlers.UpdateStoreBody:
+    type: "object"
+    required:
+    - "location"
+    - "name"
+    properties:
+      description:
+        type: "string"
+      location:
+        $ref: "#/definitions/domain.Location"
+      name:
+        type: "string"
+  services.CreateCustomerResp:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+    example:
+      id: "id"
+  services.CreateStoreResp:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+    example:
+      id: "id"
+  services.GetCustomerResp:
+    type: "object"
+    properties:
+      created_at:
+        type: "string"
+      email:
+        type: "string"
+      first_name:
+        type: "string"
+      id:
+        type: "string"
+      last_name:
+        type: "string"
+      phone:
+        type: "string"
+      updated_at:
+        type: "string"
+      user_id:
+        type: "string"
+    example:
+      updated_at: "updated_at"
+      phone: "phone"
+      user_id: "user_id"
+      created_at: "created_at"
+      last_name: "last_name"
+      id: "id"
+      first_name: "first_name"
+      email: "email"
+  services.GetStoreResp:
+    type: "object"
+    properties:
+      created_at:
+        type: "string"
+      description:
+        type: "string"
+      id:
+        type: "string"
+      lat:
+        type: "number"
+      lng:
+        type: "number"
+      name:
+        type: "string"
+      slug:
+        type: "string"
+      updated_at:
+        type: "string"
+      user_id:
+        type: "string"
+    example:
+      lng: 6.02745618307040320615897144307382404804229736328125
+      updated_at: "updated_at"
+      user_id: "user_id"
+      name: "name"
+      created_at: "created_at"
+      description: "description"
+      id: "id"
+      lat: 0.80082819046101150206595775671303272247314453125
+      slug: "slug"
+  services.ListStoresResp:
+    type: "object"
+    properties:
+      limit:
+        type: "integer"
+      offset:
+        type: "integer"
+      stores:
+        type: "array"
+        items:
+          $ref: "#/definitions/services.StoreListItem"
+      total:
+        type: "integer"
+    example:
+      total: 5
+      offset: 6
+      stores:
+      - lng: 5.962133916683182377482808078639209270477294921875
+        updated_at: "updated_at"
+        user_id: "user_id"
+        name: "name"
+        created_at: "created_at"
+        description: "description"
+        id: "id"
+        lat: 1.46581298050294517310021547018550336360931396484375
+        slug: "slug"
+      - lng: 5.962133916683182377482808078639209270477294921875
+        updated_at: "updated_at"
+        user_id: "user_id"
+        name: "name"
+        created_at: "created_at"
+        description: "description"
+        id: "id"
+        lat: 1.46581298050294517310021547018550336360931396484375
+        slug: "slug"
+      limit: 0
+  services.StoreListItem:
+    type: "object"
+    properties:
+      created_at:
+        type: "string"
+      description:
+        type: "string"
+      id:
+        type: "string"
+      lat:
+        type: "number"
+      lng:
+        type: "number"
+      name:
+        type: "string"
+      slug:
+        type: "string"
+      updated_at:
+        type: "string"
+      user_id:
+        type: "string"
+    example:
+      lng: 5.962133916683182377482808078639209270477294921875
+      updated_at: "updated_at"
+      user_id: "user_id"
+      name: "name"
+      created_at: "created_at"
+      description: "description"
+      id: "id"
+      lat: 1.46581298050294517310021547018550336360931396484375
+      slug: "slug"
+  query:
+    type: "object"
+    properties:
+      query:
+        type: "string"
+      variables:
+        type: "object"
+        properties: {}
+externalDocs:
+  description: "OpenAPI"
+  url: "https://swagger.io/resources/open-api/"
