@@ -164,6 +164,153 @@ func (c *APIClient) prepareRequest(
 	fileName string,
 	fileBytes []byte) (localVarRequest *http.Request, err error) {
 
+	// add form parameters and file if available.
+	if strings.HasPrefix(headerParams["Content-Type"], "multipart/form-data") && len(formParams) > 0 || (len(fileBytes) > 0 && fileName != "") {
+		return c.prepareMultipartRequest(ctx, path, method, postBody, headerParams, queryParams, formParams, fileName, fileBytes, nil)
+	}
+
+	return c.prepareSimpleRequest(ctx, path, method, postBody, headerParams, queryParams, formParams)
+}
+
+// prepareRequestWithFiles build the request with file uploads
+func (c *APIClient) prepareRequestWithFiles(
+	ctx context.Context,
+	path string, method string,
+	postBody interface{},
+	headerParams map[string]string,
+	queryParams url.Values,
+	formParams url.Values,
+	files []*os.File) (localVarRequest *http.Request, err error) {
+
+	return c.prepareMultipartRequest(ctx, path, method, postBody, headerParams, queryParams, formParams, "", nil, files)
+}
+
+// prepareSimpleRequest build a simple request without multipart
+func (c *APIClient) prepareSimpleRequest(
+	ctx context.Context,
+	path string, method string,
+	postBody interface{},
+	headerParams map[string]string,
+	queryParams url.Values,
+	formParams url.Values) (localVarRequest *http.Request, err error) {
+
+	var body *bytes.Buffer
+
+	// Detect postBody type and post.
+	if postBody != nil {
+		contentType := headerParams["Content-Type"]
+		if contentType == "" {
+			contentType = detectContentType(postBody)
+			headerParams["Content-Type"] = contentType
+		}
+
+		body, err = setBody(postBody, contentType)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if strings.HasPrefix(headerParams["Content-Type"], "application/x-www-form-urlencoded") && len(formParams) > 0 {
+		if body != nil {
+			return nil, errors.New("Cannot specify postBody and x-www-form-urlencoded form at the same time.")
+		}
+		body = &bytes.Buffer{}
+		body.WriteString(formParams.Encode())
+		// Set Content-Length
+		headerParams["Content-Length"] = fmt.Sprintf("%d", body.Len())
+	}
+
+	// Setup path and query parameters
+	url, err := url.Parse(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Adding Query Param
+	query := url.Query()
+	for k, v := range queryParams {
+		for _, iv := range v {
+			query.Add(k, iv)
+		}
+	}
+
+	// Encode the parameters.
+	url.RawQuery = query.Encode()
+
+	// Generate a new request
+	if body != nil {
+		localVarRequest, err = http.NewRequest(method, url.String(), body)
+	} else {
+		localVarRequest, err = http.NewRequest(method, url.String(), nil)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	// add header parameters, if any
+	if len(headerParams) > 0 {
+		headers := http.Header{}
+		for h, v := range headerParams {
+			headers.Set(h, v)
+		}
+		localVarRequest.Header = headers
+	}
+
+	// Override request host, if applicable
+	if c.cfg.Host != "" {
+		localVarRequest.Host = c.cfg.Host
+	}
+
+	// Add the user agent to the request.
+	localVarRequest.Header.Add("User-Agent", c.cfg.UserAgent)
+
+	if ctx != nil {
+		// add context to the request
+		localVarRequest = localVarRequest.WithContext(ctx)
+
+		// Walk through any authentication.
+
+		// OAuth2 authentication
+		if tok, ok := ctx.Value(ContextOAuth2).(oauth2.TokenSource); ok {
+			// We were able to grab an oauth2 token from the context
+			var latestToken *oauth2.Token
+			if latestToken, err = tok.Token(); err != nil {
+				return nil, err
+			}
+
+			latestToken.SetAuthHeader(localVarRequest)
+		}
+
+		// Basic HTTP Authentication
+		if auth, ok := ctx.Value(ContextBasicAuth).(BasicAuth); ok {
+			localVarRequest.SetBasicAuth(auth.UserName, auth.Password)
+		}
+
+		// AccessToken Authentication
+		if auth, ok := ctx.Value(ContextAccessToken).(string); ok {
+			localVarRequest.Header.Add("Authorization", "Bearer "+auth)
+		}
+	}
+
+	for header, value := range c.cfg.DefaultHeader {
+		localVarRequest.Header.Add(header, value)
+	}
+
+	return localVarRequest, nil
+}
+
+// prepareMultipartRequest build a multipart request with files
+func (c *APIClient) prepareMultipartRequest(
+	ctx context.Context,
+	path string, method string,
+	postBody interface{},
+	headerParams map[string]string,
+	queryParams url.Values,
+	formParams url.Values,
+	fileName string,
+	fileBytes []byte,
+	files []*os.File) (localVarRequest *http.Request, err error) {
+
 	var body *bytes.Buffer
 
 	// Detect postBody type and post.
@@ -181,7 +328,7 @@ func (c *APIClient) prepareRequest(
 	}
 
 	// add form parameters and file if available.
-	if strings.HasPrefix(headerParams["Content-Type"], "multipart/form-data") && len(formParams) > 0 || (len(fileBytes) > 0 && fileName != "") {
+	if strings.HasPrefix(headerParams["Content-Type"], "multipart/form-data") && len(formParams) > 0 || (len(fileBytes) > 0 && fileName != "") || len(files) > 0 {
 		if body != nil {
 			return nil, errors.New("Cannot specify postBody and multipart form at the same time.")
 		}
@@ -200,9 +347,24 @@ func (c *APIClient) prepareRequest(
 				}
 			}
 		}
+
+		// Handle files array
+		if len(files) > 0 {
+			for _, file := range files {
+				part, err := w.CreateFormFile("files", filepath.Base(file.Name()))
+				if err != nil {
+					return nil, err
+				}
+				_, err = io.Copy(part, file)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+
+		// Handle single file bytes
 		if len(fileBytes) > 0 && fileName != "" {
 			w.Boundary()
-			//_, fileNm := filepath.Split(fileName)
 			part, err := w.CreateFormFile("file", filepath.Base(fileName))
 			if err != nil {
 				return nil, err
@@ -211,10 +373,10 @@ func (c *APIClient) prepareRequest(
 			if err != nil {
 				return nil, err
 			}
-			// Set the Boundary in the Content-Type
-			headerParams["Content-Type"] = w.FormDataContentType()
 		}
 
+		// Set the Boundary in the Content-Type
+		headerParams["Content-Type"] = w.FormDataContentType()
 		// Set Content-Length
 		headerParams["Content-Length"] = fmt.Sprintf("%d", body.Len())
 		w.Close()

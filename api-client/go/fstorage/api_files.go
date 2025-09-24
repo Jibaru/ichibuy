@@ -128,8 +128,6 @@ func (a *FilesApiService) ApiV1FilesUploadPost(ctx context.Context, files []*os.
 	var (
 		localVarHttpMethod  = strings.ToUpper("Post")
 		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
 		localVarReturnValue InlineResponse200
 	)
 
@@ -157,12 +155,13 @@ func (a *FilesApiService) ApiV1FilesUploadPost(ctx context.Context, files []*os.
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
-	// Add files as file uploads (not form parameters)
+	// Store files for multipart form handling
+	var uploadFiles []*os.File
 	for _, file := range files {
-		localVarFormParams.Add("@files", file.Name())
+		uploadFiles = append(uploadFiles, file)
 	}
 	localVarFormParams.Add("domain", parameterToString(domain, ""))
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	r, err := a.client.prepareRequestWithFiles(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, uploadFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
 	}

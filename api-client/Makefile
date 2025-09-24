@@ -11,7 +11,11 @@ clean:
 gen-go:
 	@for s in $(SERVICES); do \
 		echo "Generating Go client for $$s..."; \
-		java -jar $(SWAGGER_CLI) generate -i ../$$s/docs/swagger.json -l go -o $(GO_OUT)/$$s; \
+		if [ "$$s" = "fstorage" ]; then \
+			echo "Skipping fstorage - manually modified client"; \
+		else \
+			java -jar $(SWAGGER_CLI) generate -i ../$$s/docs/swagger.json -l go -o $(GO_OUT)/$$s; \
+		fi; \
 	done
 
 gen-ts:
