@@ -40,7 +40,7 @@ router.post('/upload', upload.array('files') as any, async (req: Request, res: R
   }
 });
 
-router.delete('/delete', async (req: Request, res: Response) => {
+router.delete('/batch', async (req: Request, res: Response) => {
   try {
     const { fileIds }: DeleteRequest = req.body;
 
