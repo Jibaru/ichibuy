@@ -1,4 +1,4 @@
 {
   "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }],
-  "ignoreCommand": "CHANGED=$(git diff --name-only HEAD^ HEAD); echo \"$CHANGED\" | grep -q '^store/' || exit 0"
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- ./store"
 }
