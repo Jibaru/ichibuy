@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const swaggerDocument = JSON.parse(
-  readFileSync(join(__dirname, '../swagger.json'), 'utf8')
+  readFileSync(join(__dirname, '../docs/swagger.json'), 'utf8')
 );
 
 const app = express();
