@@ -1,10 +1,12 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import multer from 'multer';
 import { UploadThingService } from '../services/uploadthing.js';
 import { DeleteRequest } from '../types/index.js';
+import { JWTAuthMiddleware, AuthenticatedRequest } from '../middlewares/jwt_auth.js';
 
 const router = Router();
 const uploadService = new UploadThingService();
+const jwtAuth = new JWTAuthMiddleware(process.env.AUTH_BASE_URL);
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -13,7 +15,7 @@ const upload = multer({
   },
 });
 
-router.post('/upload', upload.array('files') as any, async (req: Request, res: Response) => {
+router.post('/upload', jwtAuth.validateToken(), upload.array('files') as any, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const files = req.files as Express.Multer.File[];
     const { domain } = req.body;
@@ -40,7 +42,7 @@ router.post('/upload', upload.array('files') as any, async (req: Request, res: R
   }
 });
 
-router.delete('/batch', async (req: Request, res: Response) => {
+router.delete('/batch', jwtAuth.validateToken(), async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { fileIds }: DeleteRequest = req.body;
 
