@@ -157,7 +157,10 @@ func (a *FilesApiService) ApiV1FilesUploadPost(ctx context.Context, files []*os.
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
-	localVarFormParams.Add("files", parameterToString(files, "csv"))
+	// Add files as file uploads (not form parameters)
+	for _, file := range files {
+		localVarFormParams.Add("@files", file.Name())
+	}
 	localVarFormParams.Add("domain", parameterToString(domain, ""))
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
