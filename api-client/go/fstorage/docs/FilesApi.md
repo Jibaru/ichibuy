@@ -1,0 +1,67 @@
+# \FilesApi
+
+All URIs are relative to *http://localhost:3000/api/v1*
+
+Method | HTTP request | Description
+------------- | ------------- | -------------
+[**FilesDeleteDelete**](FilesApi.md#FilesDeleteDelete) | **Delete** /files/delete | Delete multiple files
+[**FilesUploadPost**](FilesApi.md#FilesUploadPost) | **Post** /files/upload | Upload multiple files
+
+
+# **FilesDeleteDelete**
+> FilesDeleteDelete(ctx, body)
+Delete multiple files
+
+Delete multiple files by their IDs from UploadThing storage
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **body** | [**DeleteRequest**](DeleteRequest.md)| File IDs to delete | 
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **FilesUploadPost**
+> InlineResponse200 FilesUploadPost(ctx, files, domain)
+Upload multiple files
+
+Upload one or more files to UploadThing storage with a specified domain
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **files** | ***os.File**| Files to upload | 
+  **domain** | **string**| Domain for all uploaded files | 
+
+### Return type
+
+[**InlineResponse200**](inline_response_200.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: multipart/form-data
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+

@@ -1,4 +1,4 @@
-SERVICES := auth store
+SERVICES := auth store fstorage
 GO_OUT := go
 TS_OUT := ts
 SWAGGER_CLI := swagger-codegen-cli-2.4.46.jar
