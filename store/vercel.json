@@ -1,4 +1,3 @@
 {
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }],
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- ./store"
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
 }
