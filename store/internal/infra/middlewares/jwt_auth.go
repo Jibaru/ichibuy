@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"crypto/rsa"
 	"encoding/base64"
 	"fmt"
@@ -12,15 +13,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 
-	"ichibuy/store/internal/infra/client"
+	auth "github.com/Jibaru/ichibuy/api-client/go/auth"
+
+	sharedCtx "ichibuy/store/internal/shared/context"
 )
 
 type JWTAuthMiddleware struct {
-	authClient *client.AuthClient
+	authClient *auth.APIClient
 	cache      map[string]*rsa.PublicKey
 }
 
-func NewJWTAuthMiddleware(authClient *client.AuthClient) *JWTAuthMiddleware {
+func NewJWTAuthMiddleware(authClient *auth.APIClient) *JWTAuthMiddleware {
 	return &JWTAuthMiddleware{
 		authClient: authClient,
 		cache:      make(map[string]*rsa.PublicKey),
@@ -51,7 +54,7 @@ func (m *JWTAuthMiddleware) ValidateToken() gin.HandlerFunc {
 				return nil, fmt.Errorf("kid not found in token header")
 			}
 
-			publicKey, err := m.getPublicKey(kid)
+			publicKey, err := m.getPublicKey(c, kid)
 			if err != nil {
 				return nil, err
 			}
@@ -86,17 +89,20 @@ func (m *JWTAuthMiddleware) ValidateToken() gin.HandlerFunc {
 		}
 
 		slog.InfoContext(c, "token validated successfully", "user_id", userID)
+
 		c.Set("user_id", userID)
+		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), sharedCtx.APITokenKey, tokenString))
+
 		c.Next()
 	}
 }
 
-func (m *JWTAuthMiddleware) getPublicKey(kid string) (*rsa.PublicKey, error) {
+func (m *JWTAuthMiddleware) getPublicKey(c context.Context, kid string) (*rsa.PublicKey, error) {
 	if cachedKey, exists := m.cache[kid]; exists {
 		return cachedKey, nil
 	}
 
-	jwks, err := m.authClient.GetJWKS()
+	jwks, _, err := m.authClient.DefaultApi.ApiV1AuthWellKnownJwksJsonGet(c)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +122,7 @@ func (m *JWTAuthMiddleware) getPublicKey(kid string) (*rsa.PublicKey, error) {
 	return nil, fmt.Errorf("public key not found for kid: %s", kid)
 }
 
-func (m *JWTAuthMiddleware) jwkToPublicKey(jwk client.JWK) (*rsa.PublicKey, error) {
+func (m *JWTAuthMiddleware) jwkToPublicKey(jwk auth.HandlersJwk) (*rsa.PublicKey, error) {
 	nBytes, err := base64.URLEncoding.DecodeString(jwk.N)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode n: %w", err)
