@@ -14,6 +14,9 @@ const (
 	CustomerCreated EventType = "CustomerCreated"
 	CustomerUpdated EventType = "CustomerUpdated"
 	CustomerDeleted EventType = "CustomerDeleted"
+	ProductCreated  EventType = "ProductCreated"
+	ProductUpdated  EventType = "ProductUpdated"
+	ProductDeleted  EventType = "ProductDeleted"
 )
 
 type Event struct {
@@ -47,4 +50,16 @@ type CustomerEventData struct {
 	UserID    string    `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type ProductEventData struct {
+	ID          string           `json:"id"`
+	Name        string           `json:"name"`
+	Description *string          `json:"description"`
+	Active      bool             `json:"active"`
+	StoreID     string           `json:"store_id"`
+	Images      map[string]Image `json:"images"`
+	Prices      map[string]Price `json:"prices"`
+	CreatedAt   time.Time        `json:"created_at"`
+	UpdatedAt   time.Time        `json:"updated_at"`
 }
