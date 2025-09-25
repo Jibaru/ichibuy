@@ -10,9 +10,10 @@ import (
 )
 
 type Config struct {
-	APIPort     string `env:"API_PORT"`
-	PostgresURI string `env:"POSTGRES_URI"`
-	AuthBaseURL string `env:"AUTH_BASE_URL"`
+	APIPort         string `env:"API_PORT"`
+	PostgresURI     string `env:"POSTGRES_URI"`
+	AuthBaseURL     string `env:"AUTH_BASE_URL"`
+	FStorageBaseURL string `end:"FSTORAGE_BASE_URL"`
 }
 
 func Load() Config {
