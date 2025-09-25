@@ -71,6 +71,11 @@ definitions:
       id:
         type: string
     type: object
+  services.CreateProductResp:
+    properties:
+      id:
+        type: string
+    type: object
   services.CreateStoreResp:
     properties:
       id:
@@ -95,6 +100,31 @@ definitions:
       user_id:
         type: string
     type: object
+  services.GetProductResp:
+    properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/services.ImageDTO'
+        type: array
+      name:
+        type: string
+      prices:
+        items:
+          $ref: '#/definitions/services.PriceDTO'
+        type: array
+      store_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
   services.GetStoreResp:
     properties:
       created_at:
@@ -116,6 +146,26 @@ definitions:
       user_id:
         type: string
     type: object
+  services.ImageDTO:
+    properties:
+      id:
+        type: string
+      url:
+        type: string
+    type: object
+  services.ListProductsResp:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/services.ProductListItem'
+        type: array
+      total:
+        type: integer
+    type: object
   services.ListStoresResp:
     properties:
       limit:
@@ -128,6 +178,41 @@ definitions:
         type: array
       total:
         type: integer
+    type: object
+  services.PriceDTO:
+    properties:
+      amount:
+        description: cents
+        type: integer
+      currency:
+        type: string
+      id:
+        type: string
+    type: object
+  services.ProductListItem:
+    properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/services.ImageDTO'
+        type: array
+      name:
+        type: string
+      prices:
+        items:
+          $ref: '#/definitions/services.PriceDTO'
+        type: array
+      store_id:
+        type: string
+      updated_at:
+        type: string
     type: object
   services.StoreListItem:
     properties:
@@ -321,6 +406,253 @@ paths:
       summary: GraphQL endpoint for stores
       tags:
       - graphql
+  /api/v1/products:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated list of products with filters and sorting
+      parameters:
+      - description: Filter by store ID
+        in: query
+        name: store_id
+        type: string
+      - description: Filter by name
+        in: query
+        name: name
+        type: string
+      - description: Filter by description
+        in: query
+        name: description
+        type: string
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      - default: '"name"'
+        description: Sort by field
+        in: query
+        name: sort_by
+        type: string
+      - default: '"ASC"'
+        description: Sort order
+        in: query
+        name: sort_order
+        type: string
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/services.ListProductsResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: List products
+      tags:
+      - products
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create a new product with name, description, active status, store
+        ID, images (as files) and prices
+      parameters:
+      - description: Product name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Product description
+        in: formData
+        name: description
+        type: string
+      - description: Product active status
+        in: formData
+        name: active
+        required: true
+        type: boolean
+      - description: Store ID
+        in: formData
+        name: store_id
+        required: true
+        type: string
+      - description: JSON array of prices
+        in: formData
+        name: prices
+        required: true
+        type: string
+      - description: Product images (multiple files allowed)
+        in: formData
+        name: images
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.CreateProductResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Create a new product
+      tags:
+      - products
+  /api/v1/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Delete product by ID
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Get a single product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/services.GetProductResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Get a product by ID
+      tags:
+      - products
+    put:
+      consumes:
+      - multipart/form-data
+      description: 'Update an existing product. Note: StoreID, ID and CreatedAt cannot
+        be updated. Images and Prices are replaced entirely.'
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Product description
+        in: formData
+        name: description
+        type: string
+      - description: Product active status
+        in: formData
+        name: active
+        required: true
+        type: boolean
+      - description: JSON array of prices
+        in: formData
+        name: prices
+        required: true
+        type: string
+      - description: JSON array of image IDs to delete
+        in: formData
+        name: deleteImagesIDs
+        type: string
+      - description: JSON array of price IDs to delete
+        in: formData
+        name: deletePricesIDs
+        type: string
+      - description: Product images (multiple files allowed)
+        in: formData
+        name: images
+        type: file
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Update a product
+      tags:
+      - products
   /api/v1/stores:
     get:
       consumes:
