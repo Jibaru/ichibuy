@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -16,6 +17,8 @@ type Store struct {
 	UserID      string    `sql:"user_id"`
 	CreatedAt   time.Time `sql:"created_at"`
 	UpdatedAt   time.Time `sql:"updated_at"`
+
+	Entity
 }
 
 func NewStore(id, name string, description *string, lat, lng float64, userID string) (*Store, error) {
@@ -42,7 +45,7 @@ func NewStore(id, name string, description *string, lat, lng float64, userID str
 	now := time.Now().UTC()
 	slug := generateSlug(name, now.Unix())
 
-	return &Store{
+	store := &Store{
 		ID:          id,
 		Name:        name,
 		Description: description,
@@ -52,7 +55,27 @@ func NewStore(id, name string, description *string, lat, lng float64, userID str
 		UserID:      userID,
 		CreatedAt:   now,
 		UpdatedAt:   now,
-	}, nil
+	}
+
+	data, _ := json.Marshal(StoreEventData{
+		ID:          store.GetID(),
+		Name:        store.GetName(),
+		Description: store.GetDescription(),
+		Location:    store.Location(),
+		Slug:        store.GetSlug(),
+		UserID:      store.GetUserID(),
+		CreatedAt:   store.GetCreatedAt(),
+		UpdatedAt:   store.GetUpdatedAt(),
+	})
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", store.GetID(), store.GetCreatedAt().Unix()),
+		Type:      StoreCreated,
+		Data:      data,
+		Timestamp: store.GetCreatedAt(),
+	}
+	store.events = append(store.events, event)
+
+	return store, nil
 }
 
 func (s *Store) Update(name string, description *string, lat, lng float64, userID string) error {
@@ -90,7 +113,42 @@ func (s *Store) Update(name string, description *string, lat, lng float64, userI
 	s.Lng = lng
 	s.UpdatedAt = time.Now().UTC()
 
+	data, _ := json.Marshal(s.createEventData())
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", s.GetID(), s.GetUpdatedAt().Unix()),
+		Type:      StoreUpdated,
+		Data:      data,
+		Timestamp: s.GetUpdatedAt(),
+	}
+	s.events = append(s.events, event)
+
 	return nil
+}
+
+func (s *Store) PrepareDelete() {
+	data, _ := json.Marshal(s.createEventData())
+
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", s.GetID(), s.GetUpdatedAt().Unix()),
+		Type:      StoreDeleted,
+		Data:      data,
+		Timestamp: s.GetUpdatedAt(),
+	}
+
+	s.events = append(s.events, event)
+}
+
+func (s *Store) createEventData() StoreEventData {
+	return StoreEventData{
+		ID:          s.GetID(),
+		Name:        s.GetName(),
+		Description: s.GetDescription(),
+		Location:    s.Location(),
+		Slug:        s.GetSlug(),
+		UserID:      s.GetUserID(),
+		CreatedAt:   s.GetCreatedAt(),
+		UpdatedAt:   s.GetUpdatedAt(),
+	}
 }
 
 // Location returns a Location value object

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -19,6 +20,8 @@ type Product struct {
 	// Non-storable
 	prices map[string]Price
 	images map[string]Image
+
+	Entity
 }
 
 type Image struct {
@@ -53,7 +56,7 @@ func NewProduct(id, name string, description *string, active bool, storeID strin
 		return nil, err
 	}
 
-	return &Product{
+	product := &Product{
 		ID:          id,
 		Name:        name,
 		Description: description,
@@ -65,7 +68,18 @@ func NewProduct(id, name string, description *string, active bool, storeID strin
 		prices:      pricesMap,
 		CreatedAt:   time.Now().UTC(),
 		UpdatedAt:   time.Now().UTC(),
-	}, nil
+	}
+
+	data, _ := json.Marshal(product.createEventData())
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", product.GetID(), product.CreatedAt.Unix()),
+		Type:      ProductCreated,
+		Data:      data,
+		Timestamp: product.CreatedAt,
+	}
+	product.events = append(product.events, event)
+
+	return product, nil
 }
 
 func NewImage(id, url string) Image {
@@ -112,6 +126,14 @@ func (p *Product) GetActive() bool {
 
 func (p *Product) GetStoreID() string {
 	return p.StoreID
+}
+
+func (p *Product) GetCreatedAt() time.Time {
+	return p.CreatedAt
+}
+
+func (p *Product) GetUpdatedAt() time.Time {
+	return p.UpdatedAt
 }
 
 func (p *Product) GetImages() map[string]Image {
@@ -173,5 +195,41 @@ func (p *Product) Update(
 	p.Images = rawImg
 	p.Prices = rawPrice
 
+	data, _ := json.Marshal(p.createEventData())
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", p.GetID(), p.GetUpdatedAt().Unix()),
+		Type:      ProductUpdated,
+		Data:      data,
+		Timestamp: p.GetUpdatedAt(),
+	}
+	p.events = append(p.events, event)
+
 	return nil
+}
+
+func (p *Product) PrepareDelete() {
+	data, _ := json.Marshal(p.createEventData())
+
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", p.GetID(), p.GetUpdatedAt().Unix()),
+		Type:      ProductDeleted,
+		Data:      data,
+		Timestamp: p.GetUpdatedAt(),
+	}
+
+	p.events = append(p.events, event)
+}
+
+func (p *Product) createEventData() ProductEventData {
+	return ProductEventData{
+		ID:          p.GetID(),
+		Name:        p.GetName(),
+		Description: p.GetDescription(),
+		Active:      p.GetActive(),
+		StoreID:     p.GetStoreID(),
+		Images:      p.GetImages(),
+		Prices:      p.GetPrices(),
+		CreatedAt:   p.GetCreatedAt(),
+		UpdatedAt:   p.GetUpdatedAt(),
+	}
 }

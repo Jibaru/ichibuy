@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -14,6 +15,8 @@ type Customer struct {
 	UserID    string    `sql:"user_id"`
 	CreatedAt time.Time `sql:"created_at"`
 	UpdatedAt time.Time `sql:"updated_at"`
+
+	Entity
 }
 
 func NewCustomer(id, firstName, lastName string, email *string, phone *string, userID string) (*Customer, error) {
@@ -49,7 +52,7 @@ func NewCustomer(id, firstName, lastName string, email *string, phone *string, u
 
 	now := time.Now().UTC()
 
-	return &Customer{
+	customer := &Customer{
 		ID:        id,
 		FirstName: firstName,
 		LastName:  lastName,
@@ -58,7 +61,19 @@ func NewCustomer(id, firstName, lastName string, email *string, phone *string, u
 		UserID:    userID,
 		CreatedAt: now,
 		UpdatedAt: now,
-	}, nil
+	}
+
+	data, _ := json.Marshal(customer.createEventData())
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", customer.GetID(), customer.GetCreatedAt().Unix()),
+		Type:      CustomerCreated,
+		Data:      data,
+		Timestamp: customer.GetCreatedAt(),
+	}
+
+	customer.events = append(customer.events, event)
+
+	return customer, nil
 }
 
 func (c *Customer) Update(firstName, lastName string, email *string, phone *string, userID string) error {
@@ -102,7 +117,53 @@ func (c *Customer) Update(firstName, lastName string, email *string, phone *stri
 	c.Phone = phone
 	c.UpdatedAt = time.Now().UTC()
 
+	data, _ := json.Marshal(c.createEventData())
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", c.GetID(), c.GetUpdatedAt().Unix()),
+		Type:      CustomerUpdated,
+		Data:      data,
+		Timestamp: c.GetUpdatedAt(),
+	}
+
+	c.events = append(c.events, event)
+
 	return nil
+}
+
+func (c *Customer) createEventData() CustomerEventData {
+	var emailStr, phoneStr *string
+	if c.GetEmail() != nil {
+		emailValue := c.GetEmail().Value()
+		emailStr = &emailValue
+	}
+	if c.GetPhone() != nil {
+		phoneValue := c.GetPhone().Value()
+		phoneStr = &phoneValue
+	}
+
+	return CustomerEventData{
+		ID:        c.GetID(),
+		FirstName: c.GetFirstName(),
+		LastName:  c.GetLastName(),
+		Email:     emailStr,
+		Phone:     phoneStr,
+		UserID:    c.GetUserID(),
+		CreatedAt: c.GetCreatedAt(),
+		UpdatedAt: c.GetUpdatedAt(),
+	}
+}
+
+func (c *Customer) PrepareDelete() {
+	data, _ := json.Marshal(c.createEventData())
+
+	event := Event{
+		ID:        fmt.Sprintf("%s_%v", c.GetID(), c.GetUpdatedAt().Unix()),
+		Type:      CustomerDeleted,
+		Data:      data,
+		Timestamp: c.GetUpdatedAt(),
+	}
+
+	c.events = append(c.events, event)
 }
 
 // Getters
