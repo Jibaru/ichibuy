@@ -20,7 +20,7 @@ func NewStorageService(client *fstorage.APIClient) domain.StorageService {
 }
 
 func (c *storageService) UploadFiles(ctx context.Context, req []domain.UploadFileRequest) (*domain.UploadFileResponse, error) {
-	ctx = sharedCtx.AddToken(ctx, fstorage.ContextAPIKey)
+	ctx = sharedCtx.AddToken(ctx, fstorage.ContextAccessToken)
 
 	files := make([]*os.File, len(req))
 	for i, r := range req {
