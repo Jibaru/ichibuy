@@ -27,6 +27,10 @@ type Event struct {
 	Timestamp time.Time       `json:"timestamp" sql:"timestamp"`
 }
 
+func (e *Event) TableName() string {
+	return "events"
+}
+
 type EventBus interface {
 	Publish(ctx context.Context, events ...Event) error
 }
