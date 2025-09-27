@@ -41,11 +41,12 @@ func New(cfg config.Config, db *sql.DB) *gin.Engine {
 
 	jwtMiddleware := middlewares.NewJWTAuthMiddleware(authClient)
 
+	eventDAO := postgres.NewEventDAO(db)
 	storeDAO := postgres.NewStoreDAO(db)
 	customerDAO := postgres.NewCustomerDAO(db)
 	productDAO := postgres.NewProductDAO(db)
 
-	eventBus := events.NewMemoryEventBus()
+	eventBus := events.NewBus(eventDAO)
 	nextIDFunc := uuid.NewString
 
 	storageSvc := infraServices.NewStorageService(fstorageClient)
