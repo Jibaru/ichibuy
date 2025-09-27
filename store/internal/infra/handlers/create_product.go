@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
 	"ichibuy/store/internal/services"
+	"ichibuy/store/internal/shared/context"
 )
 
 // CreateProduct godoc
@@ -29,6 +31,8 @@ import (
 // @Security     BearerAuth
 func CreateProduct(createProductService *services.CreateProduct) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		slog.InfoContext(c, "token", "value", c.Value(context.APITokenKey))
+
 		_, exists := c.Get("user_id")
 		if !exists {
 			c.JSON(http.StatusUnauthorized, ErrorResp{Error: "user not found in context"})
