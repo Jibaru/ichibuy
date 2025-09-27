@@ -10,7 +10,7 @@ const (
 
 func AddToken(ctx context.Context, key any) context.Context {
 	if token := ctx.Value(APITokenKey); token != nil {
-		ctx = context.WithValue(ctx, key, token)
+		return context.WithValue(ctx, key, token)
 	}
 	return ctx
 }
