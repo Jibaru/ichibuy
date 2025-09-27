@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"encoding/json"
 
 	"ichibuy/store/internal/domain"
 	"ichibuy/store/internal/domain/dao"
@@ -42,36 +41,9 @@ func (s *CreateCustomer) Exec(ctx context.Context, req CreateCustomerReq) (*Crea
 		return nil, err
 	}
 
-	var emailStr, phoneStr *string
-	if customer.GetEmail() != nil {
-		emailValue := customer.GetEmail().Value()
-		emailStr = &emailValue
+	if err := s.eventBus.Publish(ctx, customer.PullEvents()...); err != nil {
+		return nil, err
 	}
-	if customer.GetPhone() != nil {
-		phoneValue := customer.GetPhone().Value()
-		phoneStr = &phoneValue
-	}
-
-	eventData := domain.CustomerEventData{
-		ID:        customer.GetID(),
-		FirstName: customer.GetFirstName(),
-		LastName:  customer.GetLastName(),
-		Email:     emailStr,
-		Phone:     phoneStr,
-		UserID:    customer.GetUserID(),
-		CreatedAt: customer.GetCreatedAt(),
-		UpdatedAt: customer.GetUpdatedAt(),
-	}
-
-	data, _ := json.Marshal(eventData)
-	event := domain.Event{
-		ID:        s.nextID(),
-		Type:      domain.CustomerCreated,
-		Data:      data,
-		Timestamp: customer.GetCreatedAt(),
-	}
-
-	s.eventBus.Publish(event)
 
 	return &CreateCustomerResp{ID: customer.GetID()}, nil
 }

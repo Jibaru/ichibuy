@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"encoding/json"
 
 	"ichibuy/store/internal/domain"
 	"ichibuy/store/internal/domain/dao"
@@ -32,31 +31,15 @@ func (s *DeleteProduct) Exec(ctx context.Context, req DeleteProductReq) error {
 		return err
 	}
 
+	product.PrepareDelete()
+
 	if err := s.productDAO.DeleteByPk(ctx, req.ID); err != nil {
 		return err
 	}
 
-	eventData := domain.ProductEventData{
-		ID:          product.GetID(),
-		Name:        product.GetName(),
-		Description: product.GetDescription(),
-		Active:      product.GetActive(),
-		StoreID:     product.GetStoreID(),
-		Images:      product.GetImages(),
-		Prices:      product.GetPrices(),
-		CreatedAt:   product.CreatedAt,
-		UpdatedAt:   product.UpdatedAt,
+	if err := s.eventBus.Publish(ctx, product.PullEvents()...); err != nil {
+		return err
 	}
-
-	data, _ := json.Marshal(eventData)
-	event := domain.Event{
-		ID:        s.nextID(),
-		Type:      domain.ProductDeleted,
-		Data:      data,
-		Timestamp: product.UpdatedAt,
-	}
-
-	s.eventBus.Publish(event)
 
 	return nil
 }

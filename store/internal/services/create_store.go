@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"encoding/json"
 
 	"ichibuy/store/internal/domain"
 	"ichibuy/store/internal/domain/dao"
@@ -41,26 +40,9 @@ func (s *CreateStore) Exec(ctx context.Context, req CreateStoreReq) (*CreateStor
 		return nil, err
 	}
 
-	eventData := domain.StoreEventData{
-		ID:          store.GetID(),
-		Name:        store.GetName(),
-		Description: store.GetDescription(),
-		Location:    store.Location(),
-		Slug:        store.GetSlug(),
-		UserID:      store.GetUserID(),
-		CreatedAt:   store.GetCreatedAt(),
-		UpdatedAt:   store.GetUpdatedAt(),
+	if err := s.eventBus.Publish(ctx, store.PullEvents()...); err != nil {
+		return nil, err
 	}
-
-	data, _ := json.Marshal(eventData)
-	event := domain.Event{
-		ID:        s.nextID(),
-		Type:      domain.StoreCreated,
-		Data:      data,
-		Timestamp: store.GetCreatedAt(),
-	}
-
-	s.eventBus.Publish(event)
 
 	return &CreateStoreResp{ID: store.GetID()}, nil
 }

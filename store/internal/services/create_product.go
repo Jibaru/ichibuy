@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"encoding/json"
 
 	"ichibuy/store/internal/domain"
 	"ichibuy/store/internal/domain/dao"
@@ -55,27 +54,9 @@ func (s *CreateProduct) Exec(ctx context.Context, req CreateProductReq) (*Create
 		return nil, err
 	}
 
-	eventData := domain.ProductEventData{
-		ID:          product.GetID(),
-		Name:        product.GetName(),
-		Description: product.GetDescription(),
-		Active:      product.GetActive(),
-		StoreID:     product.GetStoreID(),
-		Images:      product.GetImages(),
-		Prices:      product.GetPrices(),
-		CreatedAt:   product.CreatedAt,
-		UpdatedAt:   product.UpdatedAt,
+	if err := s.eventBus.Publish(ctx, product.PullEvents()...); err != nil {
+		return nil, err
 	}
-
-	data, _ := json.Marshal(eventData)
-	event := domain.Event{
-		ID:        s.nextID(),
-		Type:      domain.ProductCreated,
-		Data:      data,
-		Timestamp: product.CreatedAt,
-	}
-
-	s.eventBus.Publish(event)
 
 	return &CreateProductResp{ID: product.GetID()}, nil
 }
