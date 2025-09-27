@@ -26,6 +26,13 @@ A microservice for managing stores and customers in the ichibuy application.
 - `PUT /api/v1/customers/:id` - Update customer
 - `DELETE /api/v1/customers/:id` - Delete customer
 
+### Products
+- `POST /api/v1/products` - Create a new product
+- `GET /api/v1/products/:id` - Get product by ID
+- `PUT /api/v1/products/:id` - Update product
+- `DELETE /api/v1/products/:id` - Delete product
+- `GET /api/v1/products` - List products with filters and pagination
+
 ### GraphQL
 - `POST /api/v1/graphql` - GraphQL endpoint for querying stores
 
