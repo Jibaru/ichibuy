@@ -48,7 +48,7 @@ func (dao *EventDAO) queryContext(ctx context.Context, query string, args ...int
 
 func (dao *EventDAO) Create(ctx context.Context, m *Event) error {
 	query := `
-		INSERT INTO Event (id, type, data, timestamp)
+		INSERT INTO events (id, type, data, timestamp)
 		VALUES ($1, $2, $3, $4)
 	`
 
@@ -66,7 +66,7 @@ func (dao *EventDAO) Create(ctx context.Context, m *Event) error {
 
 func (dao *EventDAO) Update(ctx context.Context, m *Event) error {
 	query := `
-		UPDATE Event
+		UPDATE events
 		SET type = $1,
 			data = $2,
 			timestamp = $3
@@ -99,14 +99,14 @@ func (dao *EventDAO) PartialUpdate(ctx context.Context, pk string, fields map[st
 
 	args = append(args, pk)
 
-	query := fmt.Sprintf(`UPDATE Event SET %s WHERE id = $%d`, strings.Join(setClauses, ", "), i)
+	query := fmt.Sprintf(`UPDATE events SET %s WHERE id = $%d`, strings.Join(setClauses, ", "), i)
 
 	_, err := dao.execContext(ctx, query, args...)
 	return err
 }
 
 func (dao *EventDAO) DeleteByPk(ctx context.Context, pk string) error {
-	query := `DELETE FROM Event WHERE id = $1`
+	query := `DELETE FROM events WHERE id = $1`
 	_, err := dao.execContext(ctx, query, pk)
 	return err
 }
@@ -114,7 +114,7 @@ func (dao *EventDAO) DeleteByPk(ctx context.Context, pk string) error {
 func (dao *EventDAO) FindByPk(ctx context.Context, pk string) (*Event, error) {
 	query := `
 		SELECT id, type, data, timestamp
-		FROM Event
+		FROM events
 		WHERE id = $1
 	`
 	row := dao.queryRowContext(ctx, query, pk)
@@ -155,7 +155,7 @@ func (dao *EventDAO) CreateMany(ctx context.Context, models []*Event) error {
 	}
 
 	query := fmt.Sprintf(`
-		INSERT INTO Event (id, type, data, timestamp)
+		INSERT INTO events (id, type, data, timestamp)
 		VALUES %s
 	`, strings.Join(placeholders, ", "))
 
@@ -169,7 +169,7 @@ func (dao *EventDAO) UpdateMany(ctx context.Context, models []*Event) error {
 	}
 
 	query := `
-		UPDATE Event
+		UPDATE events
 		SET type = $1,
 			data = $2,
 			timestamp = $3
@@ -203,7 +203,7 @@ func (dao *EventDAO) DeleteManyByPks(ctx context.Context, pks []string) error {
 		args[i] = pk
 	}
 
-	query := fmt.Sprintf(`DELETE FROM Event WHERE id IN (%s)`, strings.Join(placeholders, ","))
+	query := fmt.Sprintf(`DELETE FROM events WHERE id IN (%s)`, strings.Join(placeholders, ","))
 	_, err := dao.execContext(ctx, query, args...)
 	return err
 }
@@ -211,7 +211,7 @@ func (dao *EventDAO) DeleteManyByPks(ctx context.Context, pks []string) error {
 func (dao *EventDAO) FindOne(ctx context.Context, where string, sort string, args ...interface{}) (*Event, error) {
 	query := `
 		SELECT id, type, data, timestamp
-		FROM Event
+		FROM events
 	`
 
 	if where != "" {
@@ -242,7 +242,7 @@ func (dao *EventDAO) FindOne(ctx context.Context, where string, sort string, arg
 func (dao *EventDAO) FindAll(ctx context.Context, where string, sort string, args ...interface{}) ([]*Event, error) {
 	query := `
 		SELECT id, type, data, timestamp
-		FROM Event
+		FROM events
 	`
 
 	if where != "" {
@@ -284,7 +284,7 @@ func (dao *EventDAO) FindAll(ctx context.Context, where string, sort string, arg
 func (dao *EventDAO) FindPaginated(ctx context.Context, limit, offset int, where string, sort string, args ...interface{}) ([]*Event, error) {
 	query := `
 		SELECT id, type, data, timestamp
-		FROM Event
+		FROM events
 	`
 
 	if where != "" {
@@ -326,7 +326,7 @@ func (dao *EventDAO) FindPaginated(ctx context.Context, limit, offset int, where
 }
 
 func (dao *EventDAO) Count(ctx context.Context, where string, args ...interface{}) (int64, error) {
-	query := "SELECT COUNT(*) FROM Event"
+	query := "SELECT COUNT(*) FROM events"
 
 	if where != "" {
 		query += " WHERE " + where
