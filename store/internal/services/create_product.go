@@ -20,28 +20,23 @@ type CreateProductReq struct {
 type CreateProductResp = CreateUpdateResponse
 
 type CreateProduct struct {
-	productDAO dao.ProductDAO
-	eventBus   domain.EventBus
-	nextID     domain.NextID
-	storageSvc domain.StorageService
+	productDAO     dao.ProductDAO
+	eventBus       domain.EventBus
+	nextID         domain.NextID
+	productFactory *domain.ProductFactory
 }
 
-func NewCreateProduct(productDAO dao.ProductDAO, eventBus domain.EventBus, nextID domain.NextID, storageSvc domain.StorageService) *CreateProduct {
+func NewCreateProduct(productDAO dao.ProductDAO, eventBus domain.EventBus, nextID domain.NextID, productFactory *domain.ProductFactory) *CreateProduct {
 	return &CreateProduct{
-		productDAO: productDAO,
-		eventBus:   eventBus,
-		nextID:     nextID,
-		storageSvc: storageSvc,
+		productDAO:     productDAO,
+		eventBus:       eventBus,
+		nextID:         nextID,
+		productFactory: productFactory,
 	}
 }
 
 func (s *CreateProduct) Exec(ctx context.Context, req CreateProductReq) (*CreateProductResp, error) {
 	slog.InfoContext(ctx, "create product started", "req", req)
-	images, err := s.uploadImages(ctx, req.ImageFiles)
-	if err != nil {
-		slog.ErrorContext(ctx, "upload images failed", "error", err.Error())
-		return nil, err
-	}
 
 	prices, err := convertNewPriceDTOsToDomain(req.Prices, s.nextID)
 	if err != nil {
@@ -49,7 +44,7 @@ func (s *CreateProduct) Exec(ctx context.Context, req CreateProductReq) (*Create
 		return nil, err
 	}
 
-	product, err := domain.NewProduct(s.nextID(), req.Name, req.Description, req.Active, req.StoreID, images, prices)
+	product, err := s.productFactory.NewProduct(ctx, req.Name, req.Description, req.Active, req.StoreID, s.fileDTOsToUploadFileRequests(req.ImageFiles), prices)
 	if err != nil {
 		slog.ErrorContext(ctx, "new product failed", "error", err.Error())
 		return nil, err
@@ -68,8 +63,7 @@ func (s *CreateProduct) Exec(ctx context.Context, req CreateProductReq) (*Create
 	return &CreateProductResp{ID: product.GetID()}, nil
 }
 
-func (s *CreateProduct) uploadImages(ctx context.Context, fileDTOs []FileDTO) ([]domain.Image, error) {
-	slog.InfoContext(ctx, "uploading images", "file_count", len(fileDTOs))
+func (s *CreateProduct) fileDTOsToUploadFileRequests(fileDTOs []FileDTO) []domain.UploadFileRequest {
 	reqs := make([]domain.UploadFileRequest, len(fileDTOs))
 	for i, fileDTO := range fileDTOs {
 		reqs[i] = domain.UploadFileRequest{
@@ -78,17 +72,5 @@ func (s *CreateProduct) uploadImages(ctx context.Context, fileDTOs []FileDTO) ([
 			Data:        fileDTO.Data,
 		}
 	}
-
-	uploadResp, err := s.storageSvc.UploadFiles(ctx, reqs)
-	if err != nil {
-		slog.ErrorContext(ctx, "upload files to storage failed", "error", err.Error())
-		return nil, err
-	}
-
-	images := make([]domain.Image, 0, len(fileDTOs))
-	for _, upload := range uploadResp.Infos {
-		images = append(images, domain.NewImage(upload.ID, upload.URL))
-	}
-	slog.InfoContext(ctx, "images uploaded", "image_count", len(images))
-	return images, nil
+	return reqs
 }

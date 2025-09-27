@@ -14,6 +14,7 @@ import (
 	fstorageHTTP "github.com/Jibaru/ichibuy/api-client/go/fstorage"
 
 	"ichibuy/store/config"
+	"ichibuy/store/internal/domain"
 	"ichibuy/store/internal/infra/events"
 	"ichibuy/store/internal/infra/handlers"
 	"ichibuy/store/internal/infra/middlewares"
@@ -41,6 +42,7 @@ func New(cfg config.Config, db *sql.DB) *gin.Engine {
 
 	jwtMiddleware := middlewares.NewJWTAuthMiddleware(authClient)
 
+	// DAOs
 	eventDAO := postgres.NewEventDAO(db)
 	storeDAO := postgres.NewStoreDAO(db)
 	customerDAO := postgres.NewCustomerDAO(db)
@@ -49,8 +51,13 @@ func New(cfg config.Config, db *sql.DB) *gin.Engine {
 	eventBus := events.NewBus(eventDAO)
 	nextIDFunc := uuid.NewString
 
+	// Domain ports
 	storageSvc := infraServices.NewStorageService(fstorageClient)
 
+	// Factories
+	productFactory := domain.NewProductFactory(storageSvc, nextIDFunc)
+
+	// Use-Cases
 	createStoreService := services.NewCreateStore(storeDAO, eventBus, nextIDFunc)
 	getStoreService := services.NewGetStore(storeDAO)
 	updateStoreService := services.NewUpdateStore(storeDAO, eventBus, nextIDFunc)
@@ -62,12 +69,13 @@ func New(cfg config.Config, db *sql.DB) *gin.Engine {
 	updateCustomerService := services.NewUpdateCustomer(customerDAO, eventBus, nextIDFunc)
 	deleteCustomerService := services.NewDeleteCustomer(customerDAO, eventBus, nextIDFunc)
 
-	createProductService := services.NewCreateProduct(productDAO, eventBus, nextIDFunc, storageSvc)
+	createProductService := services.NewCreateProduct(productDAO, eventBus, nextIDFunc, productFactory)
 	getProductService := services.NewGetProduct(productDAO)
 	updateProductService := services.NewUpdateProduct(productDAO, eventBus, nextIDFunc, storageSvc)
 	deleteProductService := services.NewDeleteProduct(productDAO, eventBus, nextIDFunc)
 	listProductsService := services.NewListProducts(productDAO)
 
+	// Routes
 	api := router.Group("/api/v1")
 	api.Use(jwtMiddleware.ValidateToken())
 	{

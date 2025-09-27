@@ -42,46 +42,6 @@ func sliceToMap[T any](slice []T, id func(v T) string) map[string]T {
 	return m
 }
 
-func NewProduct(id, name string, description *string, active bool, storeID string, images []Image, prices []Price) (*Product, error) {
-	imagesMap := sliceToMap(images, func(v Image) string { return v.ID })
-	pricesMap := sliceToMap(prices, func(v Price) string { return v.ID })
-
-	rawImg, err := toRawMessage(imagesMap)
-	if err != nil {
-		return nil, err
-	}
-
-	rawPrice, err := toRawMessage(pricesMap)
-	if err != nil {
-		return nil, err
-	}
-
-	product := &Product{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Active:      active,
-		StoreID:     storeID,
-		Images:      rawImg,
-		Prices:      rawPrice,
-		images:      imagesMap,
-		prices:      pricesMap,
-		CreatedAt:   time.Now().UTC(),
-		UpdatedAt:   time.Now().UTC(),
-	}
-
-	data, _ := json.Marshal(product.createEventData())
-	event := Event{
-		ID:        fmt.Sprintf("%s_%v", product.GetID(), product.CreatedAt.Unix()),
-		Type:      ProductCreated,
-		Data:      data,
-		Timestamp: product.CreatedAt,
-	}
-	product.events = append(product.events, event)
-
-	return product, nil
-}
-
 func NewImage(id, url string) Image {
 	return Image{
 		ID:  id,
