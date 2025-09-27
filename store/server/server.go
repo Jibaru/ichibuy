@@ -72,7 +72,7 @@ func New(cfg config.Config, db *sql.DB) *gin.Engine {
 	createProductService := services.NewCreateProduct(productDAO, eventBus, nextIDFunc, productFactory)
 	getProductService := services.NewGetProduct(productDAO)
 	updateProductService := services.NewUpdateProduct(productDAO, eventBus, nextIDFunc, storageSvc)
-	deleteProductService := services.NewDeleteProduct(productDAO, eventBus, nextIDFunc)
+	deleteProductService := services.NewDeleteProduct(productDAO, eventBus, nextIDFunc, storageSvc)
 	listProductsService := services.NewListProducts(productDAO)
 
 	// Routes

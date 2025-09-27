@@ -1,8 +1,10 @@
 package domain
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 )
 
@@ -167,7 +169,18 @@ func (p *Product) Update(
 	return nil
 }
 
-func (p *Product) PrepareDelete() {
+func (p *Product) PrepareDelete(ctx context.Context, storageSvc StorageService) error {
+	ids := make([]string, 0, len(p.images))
+	for _, img := range p.images {
+		ids = append(ids, img.ID)
+	}
+
+	err := storageSvc.DeleteFiles(ctx, ids)
+	if err != nil {
+		slog.ErrorContext(ctx, "delete files from storage failed", "error", err.Error())
+		return err
+	}
+
 	data, _ := json.Marshal(p.createEventData())
 
 	event := Event{
