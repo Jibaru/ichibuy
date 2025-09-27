@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 )
@@ -20,14 +21,14 @@ const (
 )
 
 type Event struct {
-	ID        string          `json:"id"`
-	Type      EventType       `json:"type"`
-	Data      json.RawMessage `json:"data"`
-	Timestamp time.Time       `json:"timestamp"`
+	ID        string          `json:"id" sql:"id,primary"`
+	Type      EventType       `json:"type" sql:"type"`
+	Data      json.RawMessage `json:"data" sql:"data"`
+	Timestamp time.Time       `json:"timestamp" sql:"timestamp"`
 }
 
 type EventBus interface {
-	Publish(event Event) error
+	Publish(ctx context.Context, events ...Event) error
 }
 
 type StoreEventData struct {
