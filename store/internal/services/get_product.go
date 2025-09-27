@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log/slog"
 
 	"ichibuy/store/internal/domain/dao"
 )
@@ -29,11 +30,14 @@ func NewGetProduct(productDAO dao.ProductDAO) *GetProduct {
 }
 
 func (s *GetProduct) Exec(ctx context.Context, id string) (*GetProductResp, error) {
+	slog.InfoContext(ctx, "get product started", "id", id)
 	product, err := s.productDAO.FindByPk(ctx, id)
 	if err != nil {
+		slog.ErrorContext(ctx, "find product failed", "error", err.Error())
 		return nil, err
 	}
 
+	slog.InfoContext(ctx, "get product finished", "product_id", product.GetID())
 	return &GetProductResp{
 		ID:          product.GetID(),
 		Name:        product.GetName(),

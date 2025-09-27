@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"ichibuy/store/internal/domain"
@@ -35,10 +36,13 @@ func NewGetStore(storeDAO dao.StoreDAO) *GetStore {
 }
 
 func (s *GetStore) Exec(ctx context.Context, req GetStoreReq) (*GetStoreResp, error) {
+	slog.InfoContext(ctx, "get store started", "req", req)
 	store, err := s.storeDAO.FindByPk(ctx, req.ID)
 	if err != nil {
+		slog.ErrorContext(ctx, "find store failed", "error", err.Error())
 		return nil, err
 	}
+	slog.InfoContext(ctx, "get store finished", "store_id", store.GetID())
 	return mapStoreToGetStoreResp(store), nil
 }
 

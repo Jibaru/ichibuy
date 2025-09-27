@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -53,6 +54,7 @@ func NewListProducts(productDAO dao.ProductDAO) *ListProducts {
 }
 
 func (s *ListProducts) Exec(ctx context.Context, req ListProductsReq) (ListProductsResp, error) {
+	slog.InfoContext(ctx, "list products started", "req", req)
 	var whereParts []string
 	var args []any
 	i := 1
@@ -94,6 +96,7 @@ func (s *ListProducts) Exec(ctx context.Context, req ListProductsReq) (ListProdu
 
 	total, err := s.productDAO.Count(ctx, where, args...)
 	if err != nil {
+		slog.ErrorContext(ctx, "count products failed", "error", err.Error())
 		return ListProductsResp{}, err
 	}
 
@@ -106,9 +109,11 @@ func (s *ListProducts) Exec(ctx context.Context, req ListProductsReq) (ListProdu
 		args...,
 	)
 	if err != nil {
+		slog.ErrorContext(ctx, "find paginated products failed", "error", err.Error())
 		return ListProductsResp{}, err
 	}
 
+	slog.InfoContext(ctx, "list products finished", "total", total, "count", len(products))
 	return ListProductsResp{
 		Products: mapProductsToListProductsResp(products),
 		Total:    total,

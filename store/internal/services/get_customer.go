@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"ichibuy/store/internal/domain"
@@ -34,10 +35,13 @@ func NewGetCustomer(customerDAO dao.CustomerDAO) *GetCustomer {
 }
 
 func (s *GetCustomer) Exec(ctx context.Context, req GetCustomerReq) (*GetCustomerResp, error) {
+	slog.InfoContext(ctx, "get customer started", "req", req)
 	customer, err := s.customerDAO.FindByPk(ctx, req.ID)
 	if err != nil {
+		slog.ErrorContext(ctx, "find customer failed", "error", err.Error())
 		return nil, err
 	}
+	slog.InfoContext(ctx, "get customer finished", "customer_id", customer.GetID())
 	return mapCustomerToGetCustomerResp(customer), nil
 }
 

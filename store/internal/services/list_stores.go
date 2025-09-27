@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -52,6 +53,7 @@ func NewListStores(storeDAO dao.StoreDAO) *ListStores {
 }
 
 func (s *ListStores) Exec(ctx context.Context, req ListStoresReq) (ListStoresResp, error) {
+	slog.InfoContext(ctx, "list stores started", "req", req)
 	var whereParts []string
 	var args []any
 	i := 1
@@ -87,6 +89,7 @@ func (s *ListStores) Exec(ctx context.Context, req ListStoresReq) (ListStoresRes
 
 	total, err := s.storeDAO.Count(ctx, where, args...)
 	if err != nil {
+		slog.ErrorContext(ctx, "count stores failed", "error", err.Error())
 		return ListStoresResp{}, err
 	}
 
@@ -99,9 +102,11 @@ func (s *ListStores) Exec(ctx context.Context, req ListStoresReq) (ListStoresRes
 		args...,
 	)
 	if err != nil {
+		slog.ErrorContext(ctx, "find paginated stores failed", "error", err.Error())
 		return ListStoresResp{}, err
 	}
 
+	slog.InfoContext(ctx, "list stores finished", "total", total, "count", len(stores))
 	return ListStoresResp{
 		Stores: mapStoresToListStoresResp(stores),
 		Total:  total,
