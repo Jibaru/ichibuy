@@ -29,14 +29,17 @@ class JWTAuthMiddleware {
 
   public validateToken() {
     return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+      console.log("Validating token started");
       try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
+          console.info("Authorization header not found");
           return res.status(401).json({ error: 'Authorization header is required' });
         }
 
         const parts = authHeader.split(' ');
         if (parts.length !== 2 || parts[0] !== 'Bearer') {
+          console.info("Invalid authorization header format");
           return res.status(401).json({ error: 'Invalid authorization header format' });
         }
 
@@ -61,6 +64,7 @@ class JWTAuthMiddleware {
             }
           }, { algorithms: ['RS256'] }, (error, decoded) => {
             if (error) {
+              console.error('JWT validation error:', error);
               reject(error);
             } else {
               resolve(decoded);
@@ -69,6 +73,7 @@ class JWTAuthMiddleware {
         });
 
         if (!payload || !payload.user_id) {
+          console.info("user_id not found in token");
           return res.status(401).json({ error: 'user_id not found in token' });
         }
 
