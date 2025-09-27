@@ -129,7 +129,7 @@ func (s *Store) PrepareDelete() {
 	data, _ := json.Marshal(s.createEventData())
 
 	event := Event{
-		ID:        fmt.Sprintf("%s_%v", s.GetID(), s.GetUpdatedAt().Unix()),
+		ID:        fmt.Sprintf("%s_%v_delete", s.GetID(), s.GetUpdatedAt().Unix()),
 		Type:      StoreDeleted,
 		Data:      data,
 		Timestamp: s.GetUpdatedAt(),

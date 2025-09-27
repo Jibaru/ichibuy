@@ -171,7 +171,7 @@ func (p *Product) PrepareDelete() {
 	data, _ := json.Marshal(p.createEventData())
 
 	event := Event{
-		ID:        fmt.Sprintf("%s_%v", p.GetID(), p.GetUpdatedAt().Unix()),
+		ID:        fmt.Sprintf("%s_%v_delete", p.GetID(), p.GetUpdatedAt().Unix()),
 		Type:      ProductDeleted,
 		Data:      data,
 		Timestamp: p.GetUpdatedAt(),
