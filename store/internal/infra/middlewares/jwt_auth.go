@@ -91,8 +91,7 @@ func (m *JWTAuthMiddleware) ValidateToken() gin.HandlerFunc {
 		slog.InfoContext(c, "token validated successfully", "user_id", userID)
 
 		c.Set("user_id", userID)
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), sharedCtx.APITokenKey, tokenString))
-
+		c.Set(sharedCtx.APITokenKey, tokenString)
 		c.Next()
 	}
 }

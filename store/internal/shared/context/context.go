@@ -2,7 +2,7 @@ package context
 
 import "context"
 
-type ContextKey string
+type ContextKey = string
 
 const (
 	APITokenKey ContextKey = "ichibuy-api-token"
