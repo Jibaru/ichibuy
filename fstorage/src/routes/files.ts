@@ -47,6 +47,7 @@ router.delete('/batch', jwtAuth.validateToken(), async (req: AuthenticatedReques
     const { fileIds }: DeleteRequest = req.body;
 
     if (!fileIds || !Array.isArray(fileIds) || fileIds.length === 0) {
+      console.error('File IDs array is required and cannot be empty', fileIds);
       return res.status(400).json({ error: 'File IDs array is required and cannot be empty' });
     }
 
