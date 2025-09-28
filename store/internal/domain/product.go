@@ -191,6 +191,7 @@ func (p *Product) PrepareDelete(ctx context.Context, storageSvc StorageService) 
 	}
 
 	p.events = append(p.events, event)
+	return nil
 }
 
 func (p *Product) createEventData() ProductEventData {
