@@ -50,7 +50,7 @@ func (c *storageService) UploadFiles(ctx context.Context, req []domain.UploadFil
 }
 
 func (c *storageService) DeleteFiles(ctx context.Context, fileIDs []string) error {
-	ctx = sharedCtx.AddToken(ctx, fstorage.ContextAPIKey)
+	ctx = sharedCtx.AddToken(ctx, fstorage.ContextAccessToken)
 	_, err := c.client.FilesApi.ApiV1FilesBatchDelete(ctx, fstorage.DeleteRequest{FileIds: fileIDs})
 	if err != nil {
 		return err
