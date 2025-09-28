@@ -169,15 +169,20 @@ func (p *Product) Update(
 	return nil
 }
 
-func (p *Product) PrepareDelete(ctx context.Context, storageSvc StorageService) error {
-	ids := make([]string, 0, len(p.images))
+func (p *Product) imageIDs() []string {
+	ids := make([]string, len(p.images))
+	i := 0
 	for _, img := range p.images {
-		ids = append(ids, img.ID)
+		ids[i] = img.ID
+		i++
 	}
+	return ids
+}
 
-	err := storageSvc.DeleteFiles(ctx, ids)
+func (p *Product) PrepareDelete(ctx context.Context, storageSvc StorageService) error {
+	err := storageSvc.DeleteFiles(ctx, p.imageIDs())
 	if err != nil {
-		slog.ErrorContext(ctx, "delete files from storage failed", "error", err.Error())
+		slog.ErrorContext(ctx, "delete files from storage failed", "image_ids", p.imageIDs(), "error", err.Error())
 		return err
 	}
 
