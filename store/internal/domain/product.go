@@ -98,6 +98,22 @@ func (p *Product) GetUpdatedAt() time.Time {
 	return p.UpdatedAt
 }
 
+func (p *Product) removeImages(ids []string) {
+	images := p.GetImages()
+	for _, id := range ids {
+		delete(images, id)
+	}
+	p.images = images
+}
+
+func (p *Product) removePrices(ids []string) {
+	prices := p.GetPrices()
+	for _, id := range ids {
+		delete(prices, id)
+	}
+	p.prices = prices
+}
+
 func (p *Product) GetImages() map[string]Image {
 	if p.images == nil {
 		_ = json.Unmarshal(p.Images, &p.images)
@@ -132,17 +148,13 @@ func (p *Product) Update(
 		p.images[img.ID] = img
 	}
 
-	for _, id := range deleteImagesIDs {
-		delete(p.images, id)
-	}
+	p.removeImages(deleteImagesIDs)
 
 	for _, price := range newPrices {
 		p.prices[price.ID] = price
 	}
 
-	for _, id := range deletePricesIDs {
-		delete(p.prices, id)
-	}
+	p.removePrices(deletePricesIDs)
 
 	rawImg, err := toRawMessage(p.images)
 	if err != nil {
@@ -170,9 +182,9 @@ func (p *Product) Update(
 }
 
 func (p *Product) imageIDs() []string {
-	ids := make([]string, len(p.images))
+	ids := make([]string, len(p.GetImages()))
 	i := 0
-	for _, img := range p.images {
+	for _, img := range p.GetImages() {
 		ids[i] = img.ID
 		i++
 	}
