@@ -16,7 +16,122 @@
         "version": "1.0"
     },
     "host": "ichibuy-order.vercel.app",
-    "paths": {},
+    "paths": {
+        "/api/v1/orders": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Create a new order",
+                "parameters": [
+                    {
+                        "description": "Order data",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateOrderBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/services.CreateOrderResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResp"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ErrorResp"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handlers.CreateOrderBody": {
+            "type": "object",
+            "required": [
+                "order_lines"
+            ],
+            "properties": {
+                "order_lines": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.OrderLineReq"
+                    }
+                }
+            }
+        },
+        "handlers.ErrorResp": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.OrderLineReq": {
+            "type": "object",
+            "required": [
+                "product_id",
+                "product_name",
+                "product_store_id",
+                "quantity",
+                "unit_price_amount",
+                "unit_price_currency"
+            ],
+            "properties": {
+                "product_id": {
+                    "type": "string"
+                },
+                "product_name": {
+                    "type": "string"
+                },
+                "product_store_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "unit_price_amount": {
+                    "type": "integer"
+                },
+                "unit_price_currency": {
+                    "type": "string"
+                }
+            }
+        },
+        "services.CreateOrderResp": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "BearerAuth": {
             "type": "apiKey",

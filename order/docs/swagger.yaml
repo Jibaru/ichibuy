@@ -1,3 +1,45 @@
+definitions:
+  handlers.CreateOrderBody:
+    properties:
+      order_lines:
+        items:
+          $ref: '#/definitions/handlers.OrderLineReq'
+        type: array
+    required:
+    - order_lines
+    type: object
+  handlers.ErrorResp:
+    properties:
+      error:
+        type: string
+    type: object
+  handlers.OrderLineReq:
+    properties:
+      product_id:
+        type: string
+      product_name:
+        type: string
+      product_store_id:
+        type: string
+      quantity:
+        type: integer
+      unit_price_amount:
+        type: integer
+      unit_price_currency:
+        type: string
+    required:
+    - product_id
+    - product_name
+    - product_store_id
+    - quantity
+    - unit_price_amount
+    - unit_price_currency
+    type: object
+  services.CreateOrderResp:
+    properties:
+      id:
+        type: string
+    type: object
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
@@ -14,7 +56,39 @@ info:
   termsOfService: http://swagger.io/terms/
   title: ichibuy/order API
   version: "1.0"
-paths: {}
+paths:
+  /api/v1/orders:
+    post:
+      consumes:
+      - application/json
+      description: Create a new order
+      parameters:
+      - description: Order data
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateOrderBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.CreateOrderResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Create a new order
+      tags:
+      - orders
 securityDefinitions:
   BearerAuth:
     in: header

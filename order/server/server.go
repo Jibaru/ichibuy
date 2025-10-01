@@ -2,7 +2,6 @@ package server
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -12,11 +11,16 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	authHTTP "github.com/Jibaru/ichibuy/api-client/go/auth"
+	storeHTTP "github.com/Jibaru/ichibuy/api-client/go/store"
 
 	"ichibuy/order/config"
+	"ichibuy/order/internal/domain"
 	"ichibuy/order/internal/infra/events"
+	"ichibuy/order/internal/infra/handlers"
 	"ichibuy/order/internal/infra/middlewares"
 	"ichibuy/order/internal/infra/persistence/postgres"
+	infraServices "ichibuy/order/internal/infra/services"
+	"ichibuy/order/internal/services"
 )
 
 func New(cfg config.Config, db *sql.DB) *gin.Engine {
@@ -31,26 +35,41 @@ func New(cfg config.Config, db *sql.DB) *gin.Engine {
 		BasePath:   cfg.AuthBaseURL,
 		HTTPClient: httpClient,
 	})
+	storeClient := storeHTTP.NewAPIClient(&storeHTTP.Configuration{
+		BasePath:   cfg.StoreBaseURL,
+		HTTPClient: httpClient,
+	})
 
 	jwtMiddleware := middlewares.NewJWTAuthMiddleware(authClient)
 
 	// DAOs
 	eventDAO := postgres.NewEventDAO(db)
+	orderDAO := postgres.NewOrderDAO(db)
 
 	eventBus := events.NewBus(eventDAO)
 	nextIDFunc := uuid.NewString
 
-	fmt.Println(eventBus, nextIDFunc)
+	// Domain Services
+	customerSvc := infraServices.NewCustomerService(storeClient)
+
+	// Factories
+	orderFactory := domain.NewOrderFactory(customerSvc, nextIDFunc)
 
 	// Use-Cases
+	createOrderService := services.NewCreateOrder(orderDAO, eventBus, nextIDFunc, orderFactory)
 
 	// Routes
 	api := router.Group("/api/v1")
 	api.Use(jwtMiddleware.ValidateToken())
 	{
-		orders := api.Group("/products")
+		orders := api.Group("/orders")
 		{
-			fmt.Println(orders)
+			orders.POST("", handlers.CreateOrder(createOrderService))
+			// list my orders
+			// cancel order (by me)
+			// accept order (by the store owner)
+			// reject order (by the store owner)
+
 		}
 	}
 
