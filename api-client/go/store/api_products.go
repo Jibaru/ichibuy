@@ -18,6 +18,8 @@ import (
 	"net/url"
 	"strings"
 	"fmt"
+	"github.com/antihax/optional"
+	"os"
 )
 
 // Linger please
@@ -25,17 +27,182 @@ var (
 	_ context.Context
 )
 
-type CustomersApiService service
+type ProductsApiService service
 
 /*
-CustomersApiService Delete customer by ID
-Delete a customer
+ProductsApiService List products
+Get paginated list of products with filters and sorting
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param id Customer ID
+ * @param optional nil or *ProductsApiApiV1ProductsGetOpts - Optional Parameters:
+     * @param "StoreId" (optional.String) -  Filter by store ID
+     * @param "Name" (optional.String) -  Filter by name
+     * @param "Description" (optional.String) -  Filter by description
+     * @param "Active" (optional.Bool) -  Filter by active status
+     * @param "SortBy" (optional.String) -  Sort by field
+     * @param "SortOrder" (optional.String) -  Sort order
+     * @param "Offset" (optional.Int32) -  Offset
+     * @param "Limit" (optional.Int32) -  Limit
+
+@return ServicesListProductsResp
+*/
+
+type ProductsApiApiV1ProductsGetOpts struct { 
+	StoreId optional.String
+	Name optional.String
+	Description optional.String
+	Active optional.Bool
+	SortBy optional.String
+	SortOrder optional.String
+	Offset optional.Int32
+	Limit optional.Int32
+}
+
+func (a *ProductsApiService) ApiV1ProductsGet(ctx context.Context, localVarOptionals *ProductsApiApiV1ProductsGetOpts) (ServicesListProductsResp, *http.Response, error) {
+	var (
+		localVarHttpMethod = strings.ToUpper("Get")
+		localVarPostBody   interface{}
+		localVarFileName   string
+		localVarFileBytes  []byte
+		localVarReturnValue ServicesListProductsResp
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/api/v1/products"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	if localVarOptionals != nil && localVarOptionals.StoreId.IsSet() {
+		localVarQueryParams.Add("store_id", parameterToString(localVarOptionals.StoreId.Value(), ""))
+	}
+	if localVarOptionals != nil && localVarOptionals.Name.IsSet() {
+		localVarQueryParams.Add("name", parameterToString(localVarOptionals.Name.Value(), ""))
+	}
+	if localVarOptionals != nil && localVarOptionals.Description.IsSet() {
+		localVarQueryParams.Add("description", parameterToString(localVarOptionals.Description.Value(), ""))
+	}
+	if localVarOptionals != nil && localVarOptionals.Active.IsSet() {
+		localVarQueryParams.Add("active", parameterToString(localVarOptionals.Active.Value(), ""))
+	}
+	if localVarOptionals != nil && localVarOptionals.SortBy.IsSet() {
+		localVarQueryParams.Add("sort_by", parameterToString(localVarOptionals.SortBy.Value(), ""))
+	}
+	if localVarOptionals != nil && localVarOptionals.SortOrder.IsSet() {
+		localVarQueryParams.Add("sort_order", parameterToString(localVarOptionals.SortOrder.Value(), ""))
+	}
+	if localVarOptionals != nil && localVarOptionals.Offset.IsSet() {
+		localVarQueryParams.Add("offset", parameterToString(localVarOptionals.Offset.Value(), ""))
+	}
+	if localVarOptionals != nil && localVarOptionals.Limit.IsSet() {
+		localVarQueryParams.Add("limit", parameterToString(localVarOptionals.Limit.Value(), ""))
+	}
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	if ctx != nil {
+		// API Key Authentication
+		if auth, ok := ctx.Value(ContextAPIKey).(APIKey); ok {
+			var key string
+			if auth.Prefix != "" {
+				key = auth.Prefix + " " + auth.Key
+			} else {
+				key = auth.Key
+			}
+			localVarHeaderParams["Authorization"] = key
+			
+		}
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body.Close()
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body: localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+		
+		if localVarHttpResponse.StatusCode == 200 {
+			var v ServicesListProductsResp
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+				if err != nil {
+					newErr.error = err.Error()
+					return localVarReturnValue, localVarHttpResponse, newErr
+				}
+				newErr.model = v
+				return localVarReturnValue, localVarHttpResponse, newErr
+		}
+		
+		if localVarHttpResponse.StatusCode == 401 {
+			var v HandlersErrorResp
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+				if err != nil {
+					newErr.error = err.Error()
+					return localVarReturnValue, localVarHttpResponse, newErr
+				}
+				newErr.model = v
+				return localVarReturnValue, localVarHttpResponse, newErr
+		}
+		
+		if localVarHttpResponse.StatusCode == 500 {
+			var v HandlersErrorResp
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+				if err != nil {
+					newErr.error = err.Error()
+					return localVarReturnValue, localVarHttpResponse, newErr
+				}
+				newErr.model = v
+				return localVarReturnValue, localVarHttpResponse, newErr
+		}
+		
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
+ProductsApiService Delete product by ID
+Delete a product
+ * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param id Product ID
 
 
 */
-func (a *CustomersApiService) ApiV1CustomersIdDelete(ctx context.Context, id string) (*http.Response, error) {
+func (a *ProductsApiService) ApiV1ProductsIdDelete(ctx context.Context, id string) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Delete")
 		localVarPostBody   interface{}
@@ -45,7 +212,7 @@ func (a *CustomersApiService) ApiV1CustomersIdDelete(ctx context.Context, id str
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/api/v1/customers/{id}"
+	localVarPath := a.client.cfg.BasePath + "/api/v1/products/{id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", fmt.Sprintf("%v", id), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -116,6 +283,28 @@ func (a *CustomersApiService) ApiV1CustomersIdDelete(ctx context.Context, id str
 				return localVarHttpResponse, newErr
 		}
 		
+		if localVarHttpResponse.StatusCode == 401 {
+			var v HandlersErrorResp
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+				if err != nil {
+					newErr.error = err.Error()
+					return localVarHttpResponse, newErr
+				}
+				newErr.model = v
+				return localVarHttpResponse, newErr
+		}
+		
+		if localVarHttpResponse.StatusCode == 404 {
+			var v HandlersErrorResp
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+				if err != nil {
+					newErr.error = err.Error()
+					return localVarHttpResponse, newErr
+				}
+				newErr.model = v
+				return localVarHttpResponse, newErr
+		}
+		
 		return localVarHttpResponse, newErr
 	}
 
@@ -123,24 +312,24 @@ func (a *CustomersApiService) ApiV1CustomersIdDelete(ctx context.Context, id str
 }
 
 /*
-CustomersApiService Get customer by ID
-Retrieve a customer by its ID
+ProductsApiService Get a product by ID
+Get a single product by its ID
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param id Customer ID
+ * @param id Product ID
 
-@return ServicesGetCustomerResp
+@return ServicesGetProductResp
 */
-func (a *CustomersApiService) ApiV1CustomersIdGet(ctx context.Context, id string) (ServicesGetCustomerResp, *http.Response, error) {
+func (a *ProductsApiService) ApiV1ProductsIdGet(ctx context.Context, id string) (ServicesGetProductResp, *http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Get")
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-		localVarReturnValue ServicesGetCustomerResp
+		localVarReturnValue ServicesGetProductResp
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/api/v1/customers/{id}"
+	localVarPath := a.client.cfg.BasePath + "/api/v1/products/{id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", fmt.Sprintf("%v", id), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -206,7 +395,7 @@ func (a *CustomersApiService) ApiV1CustomersIdGet(ctx context.Context, id string
 		}
 		
 		if localVarHttpResponse.StatusCode == 200 {
-			var v ServicesGetCustomerResp
+			var v ServicesGetProductResp
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
 				if err != nil {
 					newErr.error = err.Error()
@@ -217,6 +406,17 @@ func (a *CustomersApiService) ApiV1CustomersIdGet(ctx context.Context, id string
 		}
 		
 		if localVarHttpResponse.StatusCode == 400 {
+			var v HandlersErrorResp
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+				if err != nil {
+					newErr.error = err.Error()
+					return localVarReturnValue, localVarHttpResponse, newErr
+				}
+				newErr.model = v
+				return localVarReturnValue, localVarHttpResponse, newErr
+		}
+		
+		if localVarHttpResponse.StatusCode == 401 {
 			var v HandlersErrorResp
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
 				if err != nil {
@@ -245,15 +445,30 @@ func (a *CustomersApiService) ApiV1CustomersIdGet(ctx context.Context, id string
 }
 
 /*
-CustomersApiService Update customer by ID
-Update a customer&#39;s information
+ProductsApiService Update a product
+Update an existing product. Note: StoreID, ID and CreatedAt cannot be updated. Images and Prices are replaced entirely.
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param id Customer ID
- * @param customer Customer data
+ * @param id Product ID
+ * @param name Product name
+ * @param active Product active status
+ * @param prices JSON array of prices
+ * @param optional nil or *ProductsApiApiV1ProductsIdPutOpts - Optional Parameters:
+     * @param "Description" (optional.String) -  Product description
+     * @param "DeleteImagesIDs" (optional.String) -  JSON array of image IDs to delete
+     * @param "DeletePricesIDs" (optional.String) -  JSON array of price IDs to delete
+     * @param "Images" (optional.Interface of *os.File) -  Product images (multiple files allowed)
 
 
 */
-func (a *CustomersApiService) ApiV1CustomersIdPut(ctx context.Context, id string, customer HandlersUpdateCustomerBody) (*http.Response, error) {
+
+type ProductsApiApiV1ProductsIdPutOpts struct { 
+	Description optional.String
+	DeleteImagesIDs optional.String
+	DeletePricesIDs optional.String
+	Images optional.Interface
+}
+
+func (a *ProductsApiService) ApiV1ProductsIdPut(ctx context.Context, id string, name string, active bool, prices string, localVarOptionals *ProductsApiApiV1ProductsIdPutOpts) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Put")
 		localVarPostBody   interface{}
@@ -263,7 +478,7 @@ func (a *CustomersApiService) ApiV1CustomersIdPut(ctx context.Context, id string
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/api/v1/customers/{id}"
+	localVarPath := a.client.cfg.BasePath + "/api/v1/products/{id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", fmt.Sprintf("%v", id), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -271,7 +486,7 @@ func (a *CustomersApiService) ApiV1CustomersIdPut(ctx context.Context, id string
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
+	localVarHttpContentTypes := []string{"multipart/form-data"}
 
 	// set Content-Type header
 	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
@@ -287,8 +502,32 @@ func (a *CustomersApiService) ApiV1CustomersIdPut(ctx context.Context, id string
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
-	// body params
-	localVarPostBody = &customer
+	localVarFormParams.Add("name", parameterToString(name, ""))
+	if localVarOptionals != nil && localVarOptionals.Description.IsSet() {
+		localVarFormParams.Add("description", parameterToString(localVarOptionals.Description.Value(), ""))
+	}
+	localVarFormParams.Add("active", parameterToString(active, ""))
+	localVarFormParams.Add("prices", parameterToString(prices, ""))
+	if localVarOptionals != nil && localVarOptionals.DeleteImagesIDs.IsSet() {
+		localVarFormParams.Add("deleteImagesIDs", parameterToString(localVarOptionals.DeleteImagesIDs.Value(), ""))
+	}
+	if localVarOptionals != nil && localVarOptionals.DeletePricesIDs.IsSet() {
+		localVarFormParams.Add("deletePricesIDs", parameterToString(localVarOptionals.DeletePricesIDs.Value(), ""))
+	}
+    var localVarFile *os.File
+	if localVarOptionals != nil && localVarOptionals.Images.IsSet() {
+		localVarFileOk := false
+		localVarFile, localVarFileOk = localVarOptionals.Images.Value().(*os.File)
+		if !localVarFileOk {
+				return nil, reportError("images should be *os.File")
+		}
+	}
+	if localVarFile != nil {
+		fbs, _ := ioutil.ReadAll(localVarFile)
+		localVarFileBytes = fbs
+		localVarFileName = localVarFile.Name()
+		localVarFile.Close()
+	}
 	if ctx != nil {
 		// API Key Authentication
 		if auth, ok := ctx.Value(ContextAPIKey).(APIKey); ok {
@@ -336,6 +575,28 @@ func (a *CustomersApiService) ApiV1CustomersIdPut(ctx context.Context, id string
 				return localVarHttpResponse, newErr
 		}
 		
+		if localVarHttpResponse.StatusCode == 401 {
+			var v HandlersErrorResp
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+				if err != nil {
+					newErr.error = err.Error()
+					return localVarHttpResponse, newErr
+				}
+				newErr.model = v
+				return localVarHttpResponse, newErr
+		}
+		
+		if localVarHttpResponse.StatusCode == 404 {
+			var v HandlersErrorResp
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+				if err != nil {
+					newErr.error = err.Error()
+					return localVarHttpResponse, newErr
+				}
+				newErr.model = v
+				return localVarHttpResponse, newErr
+		}
+		
 		return localVarHttpResponse, newErr
 	}
 
@@ -343,31 +604,43 @@ func (a *CustomersApiService) ApiV1CustomersIdPut(ctx context.Context, id string
 }
 
 /*
-CustomersApiService Create a new customer
-Create a new customer with first name, last name, email and phone
+ProductsApiService Create a new product
+Create a new product with name, description, active status, store ID, images (as files) and prices
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param customer Customer data
+ * @param name Product name
+ * @param active Product active status
+ * @param storeId Store ID
+ * @param prices JSON array of prices
+ * @param optional nil or *ProductsApiApiV1ProductsPostOpts - Optional Parameters:
+     * @param "Description" (optional.String) -  Product description
+     * @param "Images" (optional.Interface of *os.File) -  Product images (multiple files allowed)
 
-@return ServicesCreateCustomerResp
+@return ServicesCreateProductResp
 */
-func (a *CustomersApiService) ApiV1CustomersPost(ctx context.Context, customer HandlersCreateCustomerBody) (ServicesCreateCustomerResp, *http.Response, error) {
+
+type ProductsApiApiV1ProductsPostOpts struct { 
+	Description optional.String
+	Images optional.Interface
+}
+
+func (a *ProductsApiService) ApiV1ProductsPost(ctx context.Context, name string, active bool, storeId string, prices string, localVarOptionals *ProductsApiApiV1ProductsPostOpts) (ServicesCreateProductResp, *http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Post")
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-		localVarReturnValue ServicesCreateCustomerResp
+		localVarReturnValue ServicesCreateProductResp
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/api/v1/customers"
+	localVarPath := a.client.cfg.BasePath + "/api/v1/products"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
+	localVarHttpContentTypes := []string{"multipart/form-data"}
 
 	// set Content-Type header
 	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
@@ -383,8 +656,27 @@ func (a *CustomersApiService) ApiV1CustomersPost(ctx context.Context, customer H
 	if localVarHttpHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
-	// body params
-	localVarPostBody = &customer
+	localVarFormParams.Add("name", parameterToString(name, ""))
+	if localVarOptionals != nil && localVarOptionals.Description.IsSet() {
+		localVarFormParams.Add("description", parameterToString(localVarOptionals.Description.Value(), ""))
+	}
+	localVarFormParams.Add("active", parameterToString(active, ""))
+	localVarFormParams.Add("store_id", parameterToString(storeId, ""))
+	localVarFormParams.Add("prices", parameterToString(prices, ""))
+    var localVarFile *os.File
+	if localVarOptionals != nil && localVarOptionals.Images.IsSet() {
+		localVarFileOk := false
+		localVarFile, localVarFileOk = localVarOptionals.Images.Value().(*os.File)
+		if !localVarFileOk {
+				return localVarReturnValue, nil, reportError("images should be *os.File")
+		}
+	}
+	if localVarFile != nil {
+		fbs, _ := ioutil.ReadAll(localVarFile)
+		localVarFileBytes = fbs
+		localVarFileName = localVarFile.Name()
+		localVarFile.Close()
+	}
 	if ctx != nil {
 		// API Key Authentication
 		if auth, ok := ctx.Value(ContextAPIKey).(APIKey); ok {
@@ -427,7 +719,7 @@ func (a *CustomersApiService) ApiV1CustomersPost(ctx context.Context, customer H
 		}
 		
 		if localVarHttpResponse.StatusCode == 201 {
-			var v ServicesCreateCustomerResp
+			var v ServicesCreateProductResp
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
 				if err != nil {
 					newErr.error = err.Error()
@@ -449,128 +741,6 @@ func (a *CustomersApiService) ApiV1CustomersPost(ctx context.Context, customer H
 		}
 		
 		if localVarHttpResponse.StatusCode == 401 {
-			var v HandlersErrorResp
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-				if err != nil {
-					newErr.error = err.Error()
-					return localVarReturnValue, localVarHttpResponse, newErr
-				}
-				newErr.model = v
-				return localVarReturnValue, localVarHttpResponse, newErr
-		}
-		
-		return localVarReturnValue, localVarHttpResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHttpResponse, nil
-}
-
-/*
-CustomersApiService Get customer by user ID
-Retrieve a customer using the associated user ID
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param userId User ID
-
-@return ServicesGetCustomerByUserIdResp
-*/
-func (a *CustomersApiService) ApiV1CustomersUserUserIdGet(ctx context.Context, userId string) (ServicesGetCustomerByUserIdResp, *http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-		localVarReturnValue ServicesGetCustomerByUserIdResp
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/api/v1/customers/user/{userId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"userId"+"}", fmt.Sprintf("%v", userId), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	if ctx != nil {
-		// API Key Authentication
-		if auth, ok := ctx.Value(ContextAPIKey).(APIKey); ok {
-			var key string
-			if auth.Prefix != "" {
-				key = auth.Prefix + " " + auth.Key
-			} else {
-				key = auth.Key
-			}
-			localVarHeaderParams["Authorization"] = key
-			
-		}
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body: localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-		
-		if localVarHttpResponse.StatusCode == 200 {
-			var v ServicesGetCustomerByUserIdResp
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-				if err != nil {
-					newErr.error = err.Error()
-					return localVarReturnValue, localVarHttpResponse, newErr
-				}
-				newErr.model = v
-				return localVarReturnValue, localVarHttpResponse, newErr
-		}
-		
-		if localVarHttpResponse.StatusCode == 400 {
-			var v HandlersErrorResp
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-				if err != nil {
-					newErr.error = err.Error()
-					return localVarReturnValue, localVarHttpResponse, newErr
-				}
-				newErr.model = v
-				return localVarReturnValue, localVarHttpResponse, newErr
-		}
-		
-		if localVarHttpResponse.StatusCode == 404 {
 			var v HandlersErrorResp
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
 				if err != nil {

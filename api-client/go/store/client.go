@@ -50,6 +50,8 @@ type APIClient struct {
 
 	GraphqlApi *GraphqlApiService
 
+	ProductsApi *ProductsApiService
+
 	StoresApi *StoresApiService
 }
 
@@ -71,6 +73,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	// API Services
 	c.CustomersApi = (*CustomersApiService)(&c.common)
 	c.GraphqlApi = (*GraphqlApiService)(&c.common)
+	c.ProductsApi = (*ProductsApiService)(&c.common)
 	c.StoresApi = (*StoresApiService)(&c.common)
 
 	return c

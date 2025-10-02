@@ -8,6 +8,7 @@ Method | HTTP request | Description
 [**ApiV1CustomersIdGet**](CustomersApi.md#ApiV1CustomersIdGet) | **Get** /api/v1/customers/{id} | Get customer by ID
 [**ApiV1CustomersIdPut**](CustomersApi.md#ApiV1CustomersIdPut) | **Put** /api/v1/customers/{id} | Update customer by ID
 [**ApiV1CustomersPost**](CustomersApi.md#ApiV1CustomersPost) | **Post** /api/v1/customers | Create a new customer
+[**ApiV1CustomersUserUserIdGet**](CustomersApi.md#ApiV1CustomersUserUserIdGet) | **Get** /api/v1/customers/user/{userId} | Get customer by user ID
 
 
 # **ApiV1CustomersIdDelete**
@@ -111,6 +112,34 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ServicesCreateCustomerResp**](services.CreateCustomerResp.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ApiV1CustomersUserUserIdGet**
+> ServicesGetCustomerByUserIdResp ApiV1CustomersUserUserIdGet(ctx, userId)
+Get customer by user ID
+
+Retrieve a customer using the associated user ID
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **userId** | **string**| User ID | 
+
+### Return type
+
+[**ServicesGetCustomerByUserIdResp**](services.GetCustomerByUserIDResp.md)
 
 ### Authorization
 

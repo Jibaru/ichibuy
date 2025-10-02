@@ -26,7 +26,13 @@ Class | Method | HTTP request | Description
 *CustomersApi* | [**ApiV1CustomersIdGet**](docs/CustomersApi.md#apiv1customersidget) | **Get** /api/v1/customers/{id} | Get customer by ID
 *CustomersApi* | [**ApiV1CustomersIdPut**](docs/CustomersApi.md#apiv1customersidput) | **Put** /api/v1/customers/{id} | Update customer by ID
 *CustomersApi* | [**ApiV1CustomersPost**](docs/CustomersApi.md#apiv1customerspost) | **Post** /api/v1/customers | Create a new customer
+*CustomersApi* | [**ApiV1CustomersUserUserIdGet**](docs/CustomersApi.md#apiv1customersuseruseridget) | **Get** /api/v1/customers/user/{userId} | Get customer by user ID
 *GraphqlApi* | [**ApiV1GraphqlPost**](docs/GraphqlApi.md#apiv1graphqlpost) | **Post** /api/v1/graphql | GraphQL endpoint for stores
+*ProductsApi* | [**ApiV1ProductsGet**](docs/ProductsApi.md#apiv1productsget) | **Get** /api/v1/products | List products
+*ProductsApi* | [**ApiV1ProductsIdDelete**](docs/ProductsApi.md#apiv1productsiddelete) | **Delete** /api/v1/products/{id} | Delete product by ID
+*ProductsApi* | [**ApiV1ProductsIdGet**](docs/ProductsApi.md#apiv1productsidget) | **Get** /api/v1/products/{id} | Get a product by ID
+*ProductsApi* | [**ApiV1ProductsIdPut**](docs/ProductsApi.md#apiv1productsidput) | **Put** /api/v1/products/{id} | Update a product
+*ProductsApi* | [**ApiV1ProductsPost**](docs/ProductsApi.md#apiv1productspost) | **Post** /api/v1/products | Create a new product
 *StoresApi* | [**ApiV1StoresGet**](docs/StoresApi.md#apiv1storesget) | **Get** /api/v1/stores | List stores
 *StoresApi* | [**ApiV1StoresIdDelete**](docs/StoresApi.md#apiv1storesiddelete) | **Delete** /api/v1/stores/{id} | Delete store by ID
 *StoresApi* | [**ApiV1StoresIdGet**](docs/StoresApi.md#apiv1storesidget) | **Get** /api/v1/stores/{id} | Get store by ID
@@ -44,10 +50,17 @@ Class | Method | HTTP request | Description
  - [HandlersUpdateStoreBody](docs/HandlersUpdateStoreBody.md)
  - [Query](docs/Query.md)
  - [ServicesCreateCustomerResp](docs/ServicesCreateCustomerResp.md)
+ - [ServicesCreateProductResp](docs/ServicesCreateProductResp.md)
  - [ServicesCreateStoreResp](docs/ServicesCreateStoreResp.md)
+ - [ServicesGetCustomerByUserIdResp](docs/ServicesGetCustomerByUserIdResp.md)
  - [ServicesGetCustomerResp](docs/ServicesGetCustomerResp.md)
+ - [ServicesGetProductResp](docs/ServicesGetProductResp.md)
  - [ServicesGetStoreResp](docs/ServicesGetStoreResp.md)
+ - [ServicesImageDto](docs/ServicesImageDto.md)
+ - [ServicesListProductsResp](docs/ServicesListProductsResp.md)
  - [ServicesListStoresResp](docs/ServicesListStoresResp.md)
+ - [ServicesPriceDto](docs/ServicesPriceDto.md)
+ - [ServicesProductListItem](docs/ServicesProductListItem.md)
  - [ServicesStoreListItem](docs/ServicesStoreListItem.md)
 
 

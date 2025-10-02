@@ -47,6 +47,38 @@ paths:
           description: "Unauthorized"
           schema:
             $ref: "#/definitions/handlers.ErrorResp"
+  /api/v1/customers/user/{userId}:
+    get:
+      tags:
+      - "customers"
+      summary: "Get customer by user ID"
+      description: "Retrieve a customer using the associated user ID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "User ID"
+        required: true
+        type: "string"
+        x-exportParamName: "UserId"
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/services.GetCustomerByUserIDResp"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "404":
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
   /api/v1/customers/{id}:
     get:
       tags:
@@ -167,6 +199,303 @@ paths:
             $ref: "#/definitions/handlers.ErrorResp"
         "401":
           description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+  /api/v1/products:
+    get:
+      tags:
+      - "products"
+      summary: "List products"
+      description: "Get paginated list of products with filters and sorting"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "store_id"
+        in: "query"
+        description: "Filter by store ID"
+        required: false
+        type: "string"
+        x-exportParamName: "StoreId"
+        x-optionalDataType: "String"
+      - name: "name"
+        in: "query"
+        description: "Filter by name"
+        required: false
+        type: "string"
+        x-exportParamName: "Name"
+        x-optionalDataType: "String"
+      - name: "description"
+        in: "query"
+        description: "Filter by description"
+        required: false
+        type: "string"
+        x-exportParamName: "Description"
+        x-optionalDataType: "String"
+      - name: "active"
+        in: "query"
+        description: "Filter by active status"
+        required: false
+        type: "boolean"
+        x-exportParamName: "Active"
+        x-optionalDataType: "Bool"
+      - name: "sort_by"
+        in: "query"
+        description: "Sort by field"
+        required: false
+        type: "string"
+        default: "\"name\""
+        x-exportParamName: "SortBy"
+        x-optionalDataType: "String"
+      - name: "sort_order"
+        in: "query"
+        description: "Sort order"
+        required: false
+        type: "string"
+        default: "\"ASC\""
+        x-exportParamName: "SortOrder"
+        x-optionalDataType: "String"
+      - name: "offset"
+        in: "query"
+        description: "Offset"
+        required: false
+        type: "integer"
+        default: 0
+        x-exportParamName: "Offset"
+        x-optionalDataType: "Int32"
+      - name: "limit"
+        in: "query"
+        description: "Limit"
+        required: false
+        type: "integer"
+        default: 10
+        x-exportParamName: "Limit"
+        x-optionalDataType: "Int32"
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/services.ListProductsResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+    post:
+      tags:
+      - "products"
+      summary: "Create a new product"
+      description: "Create a new product with name, description, active status, store\
+        \ ID, images (as files) and prices"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "formData"
+        description: "Product name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "description"
+        in: "formData"
+        description: "Product description"
+        required: false
+        type: "string"
+        x-exportParamName: "Description"
+        x-optionalDataType: "String"
+      - name: "active"
+        in: "formData"
+        description: "Product active status"
+        required: true
+        type: "boolean"
+        x-exportParamName: "Active"
+      - name: "store_id"
+        in: "formData"
+        description: "Store ID"
+        required: true
+        type: "string"
+        x-exportParamName: "StoreId"
+      - name: "prices"
+        in: "formData"
+        description: "JSON array of prices"
+        required: true
+        type: "string"
+        x-exportParamName: "Prices"
+      - name: "images"
+        in: "formData"
+        description: "Product images (multiple files allowed)"
+        required: false
+        type: "file"
+        x-exportParamName: "Images"
+      security:
+      - BearerAuth: []
+      responses:
+        "201":
+          description: "Created"
+          schema:
+            $ref: "#/definitions/services.CreateProductResp"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+  /api/v1/products/{id}:
+    get:
+      tags:
+      - "products"
+      summary: "Get a product by ID"
+      description: "Get a single product by its ID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Product ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/services.GetProductResp"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "404":
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+    put:
+      tags:
+      - "products"
+      summary: "Update a product"
+      description: "Update an existing product. Note: StoreID, ID and CreatedAt cannot\
+        \ be updated. Images and Prices are replaced entirely."
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Product ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      - name: "name"
+        in: "formData"
+        description: "Product name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "description"
+        in: "formData"
+        description: "Product description"
+        required: false
+        type: "string"
+        x-exportParamName: "Description"
+        x-optionalDataType: "String"
+      - name: "active"
+        in: "formData"
+        description: "Product active status"
+        required: true
+        type: "boolean"
+        x-exportParamName: "Active"
+      - name: "prices"
+        in: "formData"
+        description: "JSON array of prices"
+        required: true
+        type: "string"
+        x-exportParamName: "Prices"
+      - name: "deleteImagesIDs"
+        in: "formData"
+        description: "JSON array of image IDs to delete"
+        required: false
+        type: "string"
+        x-exportParamName: "DeleteImagesIDs"
+        x-optionalDataType: "String"
+      - name: "deletePricesIDs"
+        in: "formData"
+        description: "JSON array of price IDs to delete"
+        required: false
+        type: "string"
+        x-exportParamName: "DeletePricesIDs"
+        x-optionalDataType: "String"
+      - name: "images"
+        in: "formData"
+        description: "Product images (multiple files allowed)"
+        required: false
+        type: "file"
+        x-exportParamName: "Images"
+      security:
+      - BearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "404":
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+    delete:
+      tags:
+      - "products"
+      summary: "Delete product by ID"
+      description: "Delete a product"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Product ID"
+        required: true
+        type: "string"
+        x-exportParamName: "Id"
+      security:
+      - BearerAuth: []
+      responses:
+        "204":
+          description: "No Content"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/handlers.ErrorResp"
+        "404":
+          description: "Not Found"
           schema:
             $ref: "#/definitions/handlers.ErrorResp"
   /api/v1/stores:
@@ -442,6 +771,13 @@ definitions:
         type: "string"
     example:
       id: "id"
+  services.CreateProductResp:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+    example:
+      id: "id"
   services.CreateStoreResp:
     type: "object"
     properties:
@@ -449,6 +785,34 @@ definitions:
         type: "string"
     example:
       id: "id"
+  services.GetCustomerByUserIDResp:
+    type: "object"
+    properties:
+      created_at:
+        type: "string"
+      email:
+        type: "string"
+      first_name:
+        type: "string"
+      id:
+        type: "string"
+      last_name:
+        type: "string"
+      phone:
+        type: "string"
+      updated_at:
+        type: "string"
+      user_id:
+        type: "string"
+    example:
+      updated_at: "updated_at"
+      phone: "phone"
+      user_id: "user_id"
+      created_at: "created_at"
+      last_name: "last_name"
+      id: "id"
+      first_name: "first_name"
+      email: "email"
   services.GetCustomerResp:
     type: "object"
     properties:
@@ -477,6 +841,51 @@ definitions:
       id: "id"
       first_name: "first_name"
       email: "email"
+  services.GetProductResp:
+    type: "object"
+    properties:
+      active:
+        type: "boolean"
+      created_at:
+        type: "string"
+      description:
+        type: "string"
+      id:
+        type: "string"
+      images:
+        type: "array"
+        items:
+          $ref: "#/definitions/services.ImageDTO"
+      name:
+        type: "string"
+      prices:
+        type: "array"
+        items:
+          $ref: "#/definitions/services.PriceDTO"
+      store_id:
+        type: "string"
+      updated_at:
+        type: "string"
+    example:
+      store_id: "store_id"
+      images:
+      - id: "id"
+        url: "url"
+      - id: "id"
+        url: "url"
+      updated_at: "updated_at"
+      name: "name"
+      active: true
+      created_at: "created_at"
+      description: "description"
+      id: "id"
+      prices:
+      - amount: 1
+        currency: "currency"
+        id: "id"
+      - amount: 1
+        currency: "currency"
+        id: "id"
   services.GetStoreResp:
     type: "object"
     properties:
@@ -508,6 +917,72 @@ definitions:
       id: "id"
       lat: 0.80082819046101150206595775671303272247314453125
       slug: "slug"
+  services.ImageDTO:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      url:
+        type: "string"
+    example:
+      id: "id"
+      url: "url"
+  services.ListProductsResp:
+    type: "object"
+    properties:
+      limit:
+        type: "integer"
+      offset:
+        type: "integer"
+      products:
+        type: "array"
+        items:
+          $ref: "#/definitions/services.ProductListItem"
+      total:
+        type: "integer"
+    example:
+      total: 5
+      offset: 6
+      limit: 0
+      products:
+      - store_id: "store_id"
+        images:
+        - id: "id"
+          url: "url"
+        - id: "id"
+          url: "url"
+        updated_at: "updated_at"
+        name: "name"
+        active: true
+        created_at: "created_at"
+        description: "description"
+        id: "id"
+        prices:
+        - amount: 1
+          currency: "currency"
+          id: "id"
+        - amount: 1
+          currency: "currency"
+          id: "id"
+      - store_id: "store_id"
+        images:
+        - id: "id"
+          url: "url"
+        - id: "id"
+          url: "url"
+        updated_at: "updated_at"
+        name: "name"
+        active: true
+        created_at: "created_at"
+        description: "description"
+        id: "id"
+        prices:
+        - amount: 1
+          currency: "currency"
+          id: "id"
+        - amount: 1
+          currency: "currency"
+          id: "id"
   services.ListStoresResp:
     type: "object"
     properties:
@@ -544,6 +1019,65 @@ definitions:
         lat: 1.46581298050294517310021547018550336360931396484375
         slug: "slug"
       limit: 0
+  services.PriceDTO:
+    type: "object"
+    properties:
+      amount:
+        type: "integer"
+        description: "cents"
+      currency:
+        type: "string"
+      id:
+        type: "string"
+    example:
+      amount: 1
+      currency: "currency"
+      id: "id"
+  services.ProductListItem:
+    type: "object"
+    properties:
+      active:
+        type: "boolean"
+      created_at:
+        type: "string"
+      description:
+        type: "string"
+      id:
+        type: "string"
+      images:
+        type: "array"
+        items:
+          $ref: "#/definitions/services.ImageDTO"
+      name:
+        type: "string"
+      prices:
+        type: "array"
+        items:
+          $ref: "#/definitions/services.PriceDTO"
+      store_id:
+        type: "string"
+      updated_at:
+        type: "string"
+    example:
+      store_id: "store_id"
+      images:
+      - id: "id"
+        url: "url"
+      - id: "id"
+        url: "url"
+      updated_at: "updated_at"
+      name: "name"
+      active: true
+      created_at: "created_at"
+      description: "description"
+      id: "id"
+      prices:
+      - amount: 1
+        currency: "currency"
+        id: "id"
+      - amount: 1
+        currency: "currency"
+        id: "id"
   services.StoreListItem:
     type: "object"
     properties:

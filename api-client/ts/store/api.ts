@@ -350,6 +350,23 @@ export class ServicesCreateCustomerResp {
     }
 }
 
+export class ServicesCreateProductResp {
+    'id'?: string;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "id",
+            "baseName": "id",
+            "type": "string"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ServicesCreateProductResp.attributeTypeMap;
+    }
+}
+
 export class ServicesCreateStoreResp {
     'id'?: string;
 
@@ -364,6 +381,65 @@ export class ServicesCreateStoreResp {
 
     static getAttributeTypeMap() {
         return ServicesCreateStoreResp.attributeTypeMap;
+    }
+}
+
+export class ServicesGetCustomerByUserIDResp {
+    'createdAt'?: string;
+    'email'?: string;
+    'firstName'?: string;
+    'id'?: string;
+    'lastName'?: string;
+    'phone'?: string;
+    'updatedAt'?: string;
+    'userId'?: string;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "createdAt",
+            "baseName": "created_at",
+            "type": "string"
+        },
+        {
+            "name": "email",
+            "baseName": "email",
+            "type": "string"
+        },
+        {
+            "name": "firstName",
+            "baseName": "first_name",
+            "type": "string"
+        },
+        {
+            "name": "id",
+            "baseName": "id",
+            "type": "string"
+        },
+        {
+            "name": "lastName",
+            "baseName": "last_name",
+            "type": "string"
+        },
+        {
+            "name": "phone",
+            "baseName": "phone",
+            "type": "string"
+        },
+        {
+            "name": "updatedAt",
+            "baseName": "updated_at",
+            "type": "string"
+        },
+        {
+            "name": "userId",
+            "baseName": "user_id",
+            "type": "string"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ServicesGetCustomerByUserIDResp.attributeTypeMap;
     }
 }
 
@@ -423,6 +499,71 @@ export class ServicesGetCustomerResp {
 
     static getAttributeTypeMap() {
         return ServicesGetCustomerResp.attributeTypeMap;
+    }
+}
+
+export class ServicesGetProductResp {
+    'active'?: boolean;
+    'createdAt'?: string;
+    'description'?: string;
+    'id'?: string;
+    'images'?: Array<ServicesImageDTO>;
+    'name'?: string;
+    'prices'?: Array<ServicesPriceDTO>;
+    'storeId'?: string;
+    'updatedAt'?: string;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "active",
+            "baseName": "active",
+            "type": "boolean"
+        },
+        {
+            "name": "createdAt",
+            "baseName": "created_at",
+            "type": "string"
+        },
+        {
+            "name": "description",
+            "baseName": "description",
+            "type": "string"
+        },
+        {
+            "name": "id",
+            "baseName": "id",
+            "type": "string"
+        },
+        {
+            "name": "images",
+            "baseName": "images",
+            "type": "Array<ServicesImageDTO>"
+        },
+        {
+            "name": "name",
+            "baseName": "name",
+            "type": "string"
+        },
+        {
+            "name": "prices",
+            "baseName": "prices",
+            "type": "Array<ServicesPriceDTO>"
+        },
+        {
+            "name": "storeId",
+            "baseName": "store_id",
+            "type": "string"
+        },
+        {
+            "name": "updatedAt",
+            "baseName": "updated_at",
+            "type": "string"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ServicesGetProductResp.attributeTypeMap;
     }
 }
 
@@ -491,6 +632,64 @@ export class ServicesGetStoreResp {
     }
 }
 
+export class ServicesImageDTO {
+    'id'?: string;
+    'url'?: string;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "id",
+            "baseName": "id",
+            "type": "string"
+        },
+        {
+            "name": "url",
+            "baseName": "url",
+            "type": "string"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ServicesImageDTO.attributeTypeMap;
+    }
+}
+
+export class ServicesListProductsResp {
+    'limit'?: number;
+    'offset'?: number;
+    'products'?: Array<ServicesProductListItem>;
+    'total'?: number;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "limit",
+            "baseName": "limit",
+            "type": "number"
+        },
+        {
+            "name": "offset",
+            "baseName": "offset",
+            "type": "number"
+        },
+        {
+            "name": "products",
+            "baseName": "products",
+            "type": "Array<ServicesProductListItem>"
+        },
+        {
+            "name": "total",
+            "baseName": "total",
+            "type": "number"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ServicesListProductsResp.attributeTypeMap;
+    }
+}
+
 export class ServicesListStoresResp {
     'limit'?: number;
     'offset'?: number;
@@ -523,6 +722,103 @@ export class ServicesListStoresResp {
 
     static getAttributeTypeMap() {
         return ServicesListStoresResp.attributeTypeMap;
+    }
+}
+
+export class ServicesPriceDTO {
+    /**
+    * cents
+    */
+    'amount'?: number;
+    'currency'?: string;
+    'id'?: string;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "amount",
+            "baseName": "amount",
+            "type": "number"
+        },
+        {
+            "name": "currency",
+            "baseName": "currency",
+            "type": "string"
+        },
+        {
+            "name": "id",
+            "baseName": "id",
+            "type": "string"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ServicesPriceDTO.attributeTypeMap;
+    }
+}
+
+export class ServicesProductListItem {
+    'active'?: boolean;
+    'createdAt'?: string;
+    'description'?: string;
+    'id'?: string;
+    'images'?: Array<ServicesImageDTO>;
+    'name'?: string;
+    'prices'?: Array<ServicesPriceDTO>;
+    'storeId'?: string;
+    'updatedAt'?: string;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "active",
+            "baseName": "active",
+            "type": "boolean"
+        },
+        {
+            "name": "createdAt",
+            "baseName": "created_at",
+            "type": "string"
+        },
+        {
+            "name": "description",
+            "baseName": "description",
+            "type": "string"
+        },
+        {
+            "name": "id",
+            "baseName": "id",
+            "type": "string"
+        },
+        {
+            "name": "images",
+            "baseName": "images",
+            "type": "Array<ServicesImageDTO>"
+        },
+        {
+            "name": "name",
+            "baseName": "name",
+            "type": "string"
+        },
+        {
+            "name": "prices",
+            "baseName": "prices",
+            "type": "Array<ServicesPriceDTO>"
+        },
+        {
+            "name": "storeId",
+            "baseName": "store_id",
+            "type": "string"
+        },
+        {
+            "name": "updatedAt",
+            "baseName": "updated_at",
+            "type": "string"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ServicesProductListItem.attributeTypeMap;
     }
 }
 
@@ -604,10 +900,17 @@ let typeMap: {[index: string]: any} = {
     "HandlersUpdateStoreBody": HandlersUpdateStoreBody,
     "Query": Query,
     "ServicesCreateCustomerResp": ServicesCreateCustomerResp,
+    "ServicesCreateProductResp": ServicesCreateProductResp,
     "ServicesCreateStoreResp": ServicesCreateStoreResp,
+    "ServicesGetCustomerByUserIDResp": ServicesGetCustomerByUserIDResp,
     "ServicesGetCustomerResp": ServicesGetCustomerResp,
+    "ServicesGetProductResp": ServicesGetProductResp,
     "ServicesGetStoreResp": ServicesGetStoreResp,
+    "ServicesImageDTO": ServicesImageDTO,
+    "ServicesListProductsResp": ServicesListProductsResp,
     "ServicesListStoresResp": ServicesListStoresResp,
+    "ServicesPriceDTO": ServicesPriceDTO,
+    "ServicesProductListItem": ServicesProductListItem,
     "ServicesStoreListItem": ServicesStoreListItem,
 }
 
@@ -942,6 +1245,63 @@ export class CustomersApi {
             });
         });
     }
+    /**
+     * Retrieve a customer using the associated user ID
+     * @summary Get customer by user ID
+     * @param userId User ID
+     * @param {*} [options] Override http request options.
+     */
+    public apiV1CustomersUserUserIdGet (userId: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: ServicesGetCustomerByUserIDResp;  }> {
+        const localVarPath = this.basePath + '/api/v1/customers/user/{userId}'
+            .replace('{' + 'userId' + '}', encodeURIComponent(String(userId)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'userId' is not null or undefined
+        if (userId === null || userId === undefined) {
+            throw new Error('Required parameter userId was null or undefined when calling apiV1CustomersUserUserIdGet.');
+        }
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.BearerAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ServicesGetCustomerByUserIDResp;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "ServicesGetCustomerByUserIDResp");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
 }
 export enum GraphqlApiApiKeys {
     BearerAuth,
@@ -1037,6 +1397,464 @@ export class GraphqlApi {
                     reject(error);
                 } else {
                     body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum ProductsApiApiKeys {
+    BearerAuth,
+}
+
+export class ProductsApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'BearerAuth': new ApiKeyAuth('header', 'Authorization'),
+    }
+
+    constructor(basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: ProductsApiApiKeys, value: string) {
+        (this.authentications as any)[ProductsApiApiKeys[key]].apiKey = value;
+    }
+    /**
+     * Get paginated list of products with filters and sorting
+     * @summary List products
+     * @param storeId Filter by store ID
+     * @param name Filter by name
+     * @param description Filter by description
+     * @param active Filter by active status
+     * @param sortBy Sort by field
+     * @param sortOrder Sort order
+     * @param offset Offset
+     * @param limit Limit
+     * @param {*} [options] Override http request options.
+     */
+    public apiV1ProductsGet (storeId?: string, name?: string, description?: string, active?: boolean, sortBy?: string, sortOrder?: string, offset?: number, limit?: number, options: any = {}) : Promise<{ response: http.ClientResponse; body: ServicesListProductsResp;  }> {
+        const localVarPath = this.basePath + '/api/v1/products';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        if (storeId !== undefined) {
+            localVarQueryParameters['store_id'] = ObjectSerializer.serialize(storeId, "string");
+        }
+
+        if (name !== undefined) {
+            localVarQueryParameters['name'] = ObjectSerializer.serialize(name, "string");
+        }
+
+        if (description !== undefined) {
+            localVarQueryParameters['description'] = ObjectSerializer.serialize(description, "string");
+        }
+
+        if (active !== undefined) {
+            localVarQueryParameters['active'] = ObjectSerializer.serialize(active, "boolean");
+        }
+
+        if (sortBy !== undefined) {
+            localVarQueryParameters['sort_by'] = ObjectSerializer.serialize(sortBy, "string");
+        }
+
+        if (sortOrder !== undefined) {
+            localVarQueryParameters['sort_order'] = ObjectSerializer.serialize(sortOrder, "string");
+        }
+
+        if (offset !== undefined) {
+            localVarQueryParameters['offset'] = ObjectSerializer.serialize(offset, "number");
+        }
+
+        if (limit !== undefined) {
+            localVarQueryParameters['limit'] = ObjectSerializer.serialize(limit, "number");
+        }
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.BearerAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ServicesListProductsResp;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "ServicesListProductsResp");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Delete a product
+     * @summary Delete product by ID
+     * @param id Product ID
+     * @param {*} [options] Override http request options.
+     */
+    public apiV1ProductsIdDelete (id: string, options: any = {}) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/products/{id}'
+            .replace('{' + 'id' + '}', encodeURIComponent(String(id)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'id' is not null or undefined
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling apiV1ProductsIdDelete.');
+        }
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'DELETE',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.BearerAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get a single product by its ID
+     * @summary Get a product by ID
+     * @param id Product ID
+     * @param {*} [options] Override http request options.
+     */
+    public apiV1ProductsIdGet (id: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: ServicesGetProductResp;  }> {
+        const localVarPath = this.basePath + '/api/v1/products/{id}'
+            .replace('{' + 'id' + '}', encodeURIComponent(String(id)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'id' is not null or undefined
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling apiV1ProductsIdGet.');
+        }
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.BearerAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ServicesGetProductResp;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "ServicesGetProductResp");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Update an existing product. Note: StoreID, ID and CreatedAt cannot be updated. Images and Prices are replaced entirely.
+     * @summary Update a product
+     * @param id Product ID
+     * @param name Product name
+     * @param active Product active status
+     * @param prices JSON array of prices
+     * @param description Product description
+     * @param deleteImagesIDs JSON array of image IDs to delete
+     * @param deletePricesIDs JSON array of price IDs to delete
+     * @param images Product images (multiple files allowed)
+     * @param {*} [options] Override http request options.
+     */
+    public apiV1ProductsIdPut (id: string, name: string, active: boolean, prices: string, description?: string, deleteImagesIDs?: string, deletePricesIDs?: string, images?: Buffer, options: any = {}) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/products/{id}'
+            .replace('{' + 'id' + '}', encodeURIComponent(String(id)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'id' is not null or undefined
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling apiV1ProductsIdPut.');
+        }
+
+        // verify required parameter 'name' is not null or undefined
+        if (name === null || name === undefined) {
+            throw new Error('Required parameter name was null or undefined when calling apiV1ProductsIdPut.');
+        }
+
+        // verify required parameter 'active' is not null or undefined
+        if (active === null || active === undefined) {
+            throw new Error('Required parameter active was null or undefined when calling apiV1ProductsIdPut.');
+        }
+
+        // verify required parameter 'prices' is not null or undefined
+        if (prices === null || prices === undefined) {
+            throw new Error('Required parameter prices was null or undefined when calling apiV1ProductsIdPut.');
+        }
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        if (name !== undefined) {
+            localVarFormParams['name'] = ObjectSerializer.serialize(name, "string");
+        }
+
+        if (description !== undefined) {
+            localVarFormParams['description'] = ObjectSerializer.serialize(description, "string");
+        }
+
+        if (active !== undefined) {
+            localVarFormParams['active'] = ObjectSerializer.serialize(active, "boolean");
+        }
+
+        if (prices !== undefined) {
+            localVarFormParams['prices'] = ObjectSerializer.serialize(prices, "string");
+        }
+
+        if (deleteImagesIDs !== undefined) {
+            localVarFormParams['deleteImagesIDs'] = ObjectSerializer.serialize(deleteImagesIDs, "string");
+        }
+
+        if (deletePricesIDs !== undefined) {
+            localVarFormParams['deletePricesIDs'] = ObjectSerializer.serialize(deletePricesIDs, "string");
+        }
+
+        if (images !== undefined) {
+            localVarFormParams['images'] = images;
+        }
+        localVarUseFormData = true;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'PUT',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.BearerAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Create a new product with name, description, active status, store ID, images (as files) and prices
+     * @summary Create a new product
+     * @param name Product name
+     * @param active Product active status
+     * @param storeId Store ID
+     * @param prices JSON array of prices
+     * @param description Product description
+     * @param images Product images (multiple files allowed)
+     * @param {*} [options] Override http request options.
+     */
+    public apiV1ProductsPost (name: string, active: boolean, storeId: string, prices: string, description?: string, images?: Buffer, options: any = {}) : Promise<{ response: http.ClientResponse; body: ServicesCreateProductResp;  }> {
+        const localVarPath = this.basePath + '/api/v1/products';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'name' is not null or undefined
+        if (name === null || name === undefined) {
+            throw new Error('Required parameter name was null or undefined when calling apiV1ProductsPost.');
+        }
+
+        // verify required parameter 'active' is not null or undefined
+        if (active === null || active === undefined) {
+            throw new Error('Required parameter active was null or undefined when calling apiV1ProductsPost.');
+        }
+
+        // verify required parameter 'storeId' is not null or undefined
+        if (storeId === null || storeId === undefined) {
+            throw new Error('Required parameter storeId was null or undefined when calling apiV1ProductsPost.');
+        }
+
+        // verify required parameter 'prices' is not null or undefined
+        if (prices === null || prices === undefined) {
+            throw new Error('Required parameter prices was null or undefined when calling apiV1ProductsPost.');
+        }
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        if (name !== undefined) {
+            localVarFormParams['name'] = ObjectSerializer.serialize(name, "string");
+        }
+
+        if (description !== undefined) {
+            localVarFormParams['description'] = ObjectSerializer.serialize(description, "string");
+        }
+
+        if (active !== undefined) {
+            localVarFormParams['active'] = ObjectSerializer.serialize(active, "boolean");
+        }
+
+        if (storeId !== undefined) {
+            localVarFormParams['store_id'] = ObjectSerializer.serialize(storeId, "string");
+        }
+
+        if (prices !== undefined) {
+            localVarFormParams['prices'] = ObjectSerializer.serialize(prices, "string");
+        }
+
+        if (images !== undefined) {
+            localVarFormParams['images'] = images;
+        }
+        localVarUseFormData = true;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'POST',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.BearerAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ServicesCreateProductResp;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "ServicesCreateProductResp");
                     if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
                         resolve({ response: response, body: body });
                     } else {
