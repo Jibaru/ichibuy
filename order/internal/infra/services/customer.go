@@ -6,6 +6,7 @@ import (
 	storeHTTP "github.com/Jibaru/ichibuy/api-client/go/store"
 
 	"ichibuy/order/internal/domain"
+	sharedCtx "ichibuy/order/internal/shared/context"
 )
 
 type customerService struct {
@@ -17,6 +18,14 @@ func NewCustomerService(client *storeHTTP.APIClient) *customerService {
 }
 
 func (s *customerService) FindByUserID(ctx context.Context, userID string) (*domain.CustomerDTO, error) {
-	// TODO: implement
-	return &domain.CustomerDTO{}, nil
+	ctx = sharedCtx.AddToken(ctx, storeHTTP.ContextAccessToken)
+
+	resp, _, err := s.client.CustomersApi.ApiV1CustomersUserUserIdGet(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.CustomerDTO{
+		ID: resp.Id,
+	}, nil
 }

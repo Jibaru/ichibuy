@@ -3,7 +3,7 @@ module ichibuy/order
 go 1.25.1
 
 require (
-	github.com/Jibaru/ichibuy v0.0.0-20250928003425-d7192aedc794
+	github.com/Jibaru/ichibuy v0.0.0-20251002002601-5dbe61284a36
 	github.com/gin-gonic/gin v1.11.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
