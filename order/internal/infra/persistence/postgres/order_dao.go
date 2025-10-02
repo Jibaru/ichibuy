@@ -48,7 +48,7 @@ func (dao *OrderDAO) queryContext(ctx context.Context, query string, args ...int
 
 func (dao *OrderDAO) Create(ctx context.Context, m *Order) error {
 	query := `
-		INSERT INTO Order (id, code, current_status, order_lines, customer_id, created_at, updated_at)
+		INSERT INTO orders (id, code, current_status, order_lines, customer_id, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 
@@ -69,7 +69,7 @@ func (dao *OrderDAO) Create(ctx context.Context, m *Order) error {
 
 func (dao *OrderDAO) Update(ctx context.Context, m *Order) error {
 	query := `
-		UPDATE Order
+		UPDATE orders
 		SET code = $1,
 			current_status = $2,
 			order_lines = $3,
@@ -108,14 +108,14 @@ func (dao *OrderDAO) PartialUpdate(ctx context.Context, pk string, fields map[st
 
 	args = append(args, pk)
 
-	query := fmt.Sprintf(`UPDATE Order SET %s WHERE id = $%d`, strings.Join(setClauses, ", "), i)
+	query := fmt.Sprintf(`UPDATE orders SET %s WHERE id = $%d`, strings.Join(setClauses, ", "), i)
 
 	_, err := dao.execContext(ctx, query, args...)
 	return err
 }
 
 func (dao *OrderDAO) DeleteByPk(ctx context.Context, pk string) error {
-	query := `DELETE FROM Order WHERE id = $1`
+	query := `DELETE FROM orders WHERE id = $1`
 	_, err := dao.execContext(ctx, query, pk)
 	return err
 }
@@ -123,7 +123,7 @@ func (dao *OrderDAO) DeleteByPk(ctx context.Context, pk string) error {
 func (dao *OrderDAO) FindByPk(ctx context.Context, pk string) (*Order, error) {
 	query := `
 		SELECT id, code, current_status, order_lines, customer_id, created_at, updated_at
-		FROM Order
+		FROM orders
 		WHERE id = $1
 	`
 	row := dao.queryRowContext(ctx, query, pk)
@@ -170,7 +170,7 @@ func (dao *OrderDAO) CreateMany(ctx context.Context, models []*Order) error {
 	}
 
 	query := fmt.Sprintf(`
-		INSERT INTO Order (id, code, current_status, order_lines, customer_id, created_at, updated_at)
+		INSERT INTO orders (id, code, current_status, order_lines, customer_id, created_at, updated_at)
 		VALUES %s
 	`, strings.Join(placeholders, ", "))
 
@@ -184,7 +184,7 @@ func (dao *OrderDAO) UpdateMany(ctx context.Context, models []*Order) error {
 	}
 
 	query := `
-		UPDATE Order
+		UPDATE orders
 		SET code = $1,
 			current_status = $2,
 			order_lines = $3,
@@ -224,7 +224,7 @@ func (dao *OrderDAO) DeleteManyByPks(ctx context.Context, pks []string) error {
 		args[i] = pk
 	}
 
-	query := fmt.Sprintf(`DELETE FROM Order WHERE id IN (%s)`, strings.Join(placeholders, ","))
+	query := fmt.Sprintf(`DELETE FROM orders WHERE id IN (%s)`, strings.Join(placeholders, ","))
 	_, err := dao.execContext(ctx, query, args...)
 	return err
 }
@@ -232,7 +232,7 @@ func (dao *OrderDAO) DeleteManyByPks(ctx context.Context, pks []string) error {
 func (dao *OrderDAO) FindOne(ctx context.Context, where string, sort string, args ...interface{}) (*Order, error) {
 	query := `
 		SELECT id, code, current_status, order_lines, customer_id, created_at, updated_at
-		FROM Order
+		FROM orders
 	`
 
 	if where != "" {
@@ -266,7 +266,7 @@ func (dao *OrderDAO) FindOne(ctx context.Context, where string, sort string, arg
 func (dao *OrderDAO) FindAll(ctx context.Context, where string, sort string, args ...interface{}) ([]*Order, error) {
 	query := `
 		SELECT id, code, current_status, order_lines, customer_id, created_at, updated_at
-		FROM Order
+		FROM orders
 	`
 
 	if where != "" {
@@ -311,7 +311,7 @@ func (dao *OrderDAO) FindAll(ctx context.Context, where string, sort string, arg
 func (dao *OrderDAO) FindPaginated(ctx context.Context, limit, offset int, where string, sort string, args ...interface{}) ([]*Order, error) {
 	query := `
 		SELECT id, code, current_status, order_lines, customer_id, created_at, updated_at
-		FROM Order
+		FROM orders
 	`
 
 	if where != "" {
@@ -356,7 +356,7 @@ func (dao *OrderDAO) FindPaginated(ctx context.Context, limit, offset int, where
 }
 
 func (dao *OrderDAO) Count(ctx context.Context, where string, args ...interface{}) (int64, error) {
-	query := "SELECT COUNT(*) FROM Order"
+	query := "SELECT COUNT(*) FROM orders"
 
 	if where != "" {
 		query += " WHERE " + where

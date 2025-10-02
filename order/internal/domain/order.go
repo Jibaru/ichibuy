@@ -36,3 +36,7 @@ func (o *Order) Accept(acceptedBy string) error {
 	}
 	return nil
 }
+
+func (o *Order) TableName() string {
+	return "orders"
+}
