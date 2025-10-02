@@ -6,7 +6,14 @@ SWAGGER_CLI := swagger-codegen-cli-2.4.46.jar
 gen: clean gen-go gen-ts
 
 clean:
-	@rm -rf $(GO_OUT)/ $(TS_OUT)/
+	@for s in $(SERVICES); do \
+		if [ "$$s" = "fstorage" ]; then \
+			echo "Skipping fstorage - manually modified client"; \
+		else \
+			echo "Cleaning Go client for $$s..."; \
+			rm -rf $(GO_OUT)/$$s; \
+		fi; \
+	done
 
 gen-go:
 	@for s in $(SERVICES); do \
