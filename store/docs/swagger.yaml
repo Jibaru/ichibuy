@@ -81,6 +81,25 @@ definitions:
       id:
         type: string
     type: object
+  services.GetCustomerByUserIDResp:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
   services.GetCustomerResp:
     properties:
       created_at:
@@ -367,6 +386,37 @@ paths:
       security:
       - BearerAuth: []
       summary: Update customer by ID
+      tags:
+      - customers
+  /api/v1/customers/user/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a customer using the associated user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/services.GetCustomerByUserIDResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResp'
+      security:
+      - BearerAuth: []
+      summary: Get customer by user ID
       tags:
       - customers
   /api/v1/graphql:

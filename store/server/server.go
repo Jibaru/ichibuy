@@ -68,6 +68,7 @@ func New(cfg config.Config, db *sql.DB) *gin.Engine {
 	getCustomerService := services.NewGetCustomer(customerDAO)
 	updateCustomerService := services.NewUpdateCustomer(customerDAO, eventBus, nextIDFunc)
 	deleteCustomerService := services.NewDeleteCustomer(customerDAO, eventBus, nextIDFunc)
+	getCustomerByUserIDService := services.NewGetCustomerByUserID(customerDAO)
 
 	createProductService := services.NewCreateProduct(productDAO, eventBus, nextIDFunc, productFactory)
 	getProductService := services.NewGetProduct(productDAO)
@@ -94,6 +95,7 @@ func New(cfg config.Config, db *sql.DB) *gin.Engine {
 			customers.GET("/:id", handlers.GetCustomer(getCustomerService))
 			customers.PUT("/:id", handlers.UpdateCustomer(updateCustomerService))
 			customers.DELETE("/:id", handlers.DeleteCustomer(deleteCustomerService))
+			customers.GET("/user/:userId", handlers.GetCustomerByUserID(getCustomerByUserIDService))
 		}
 
 		products := api.Group("/products")
